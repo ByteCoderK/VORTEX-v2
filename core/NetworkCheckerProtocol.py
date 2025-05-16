@@ -5,8 +5,6 @@ import serial
 import requests
 from colorama import Fore, Back, Style , init
 init()
-sys.path.append(os.path.abspath("C:\\User\\User One\\Desktop\\VORTEX-v2\\core\\Voice.py"))
-from Voice import *
 loading = True
 loadTime = 0
 try:
@@ -48,7 +46,6 @@ def control_relay(relay_number, state):
         command = str(relay_number) + state
         ser.write(command.encode())
     except Exception as E:
-        speakOnly("Apologies, Master. It seems I'm unable to control that hardware at the moment.Would you like me to try something else?")
         print_colored("| VORTEX :  Error: Unable to establish connection with the designated hardware. Please ensure that the device is properly configured and accessible.\n \t   Alternatively, there may be a technical issue preventing communication.",Color.RED)
 
 def print_loading():

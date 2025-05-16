@@ -86,14 +86,5 @@ def speakOnly(text):
     asyncio.run(speech_setting(text, voice, rate, pitch))  # also uses global vars
 
 
-def date():
-    date = datetime.datetime.now()
-    speak(date)
-
-def current_time():
-    current_time = datetime.datetime.now()
-    current_time_str = current_time.strftime("%I:%M %p")
-    speak("Current time is: " + current_time_str)
-    print(current_time_str)
 
 

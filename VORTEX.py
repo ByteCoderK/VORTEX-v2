@@ -7,7 +7,12 @@ sys.path.append(project_root)
 
 
 from commands.greet import *
-from commands.Functions import *
+from commands.date import *
+from commands.time import *
+from commands.Weather import *
+from commands.Music import *
+
+
 from core.NetworkCheckerProtocol import *
 from core.Voice import *
 
@@ -49,8 +54,7 @@ def listen():
         break
 
 def logic():
-    greetings == greet()
-    speak(greetings)
+    speak(greet())
     #DailyReminderLoader()
     global NAME_EXTRACTION_1, RECEIVER_NAME, RECEIVER_NAME_protocol2,reminderTime,searchKey
     global reminderMessage,reminderTime,reminderTimeAsk
@@ -60,9 +64,9 @@ def logic():
         query = query.lower()
         
         if "time" in queryList:
-            current_time()
+            speak(current_time())
         elif "date" in queryList:
-            date()
+            speak(date())
 
         #elif any(sentance in query for sentance in ['what is the weather',"what's the weather"]):
          #   try:
@@ -100,10 +104,7 @@ def logic():
             print_colored("| VORTEX :  PASS-BY ", Color.RED)
             pass
 if __name__ == '__main__':
-    pass
-    #:Logic()
+    logic()
 else: 
-    
     print("WARNING : Running as imported Module")
-    #logic()
-listen()
+    logic()

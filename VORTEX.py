@@ -28,7 +28,7 @@ def logic():
     global reminderMessage,reminderTime,reminderTimeAsk
     global query,queryList
     while True:
-        listen()
+        #listen()
         query = query.lower()
         
         if "time" in queryList:

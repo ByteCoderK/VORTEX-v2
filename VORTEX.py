@@ -73,9 +73,6 @@ def logic():
              #   speakOnly("Error Device Offline.")
               #  print_colored("| VORTEX : Error Device Offline.",Color.RED)
 
-        elif "play music" == query or "play songs" == query or "play a song" == query:
-            play_music()
-
         #elif "reminder" in queryList:
          #   speak("Sure, what's the reminder?")
           #  reminderTimeAsk = input("USER  : ")

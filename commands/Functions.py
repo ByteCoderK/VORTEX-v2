@@ -86,20 +86,6 @@ def speakOnly(text):
     asyncio.run(speech_setting(text, voice, rate, pitch))  # also uses global vars
 
 
-    
-
-def play_music():
-    music_dir = "F:\\STRORAGE\\OneDrive\\Desktop\\Python\\AI\\DataBase\\music"
-    try:
-        songs = os.listdir(music_dir)
-        rd = random.choice(songs)
-        os.startfile(os.path.join(music_dir, rd))
-        speak("Playing your favorite tunes.")
-    except Exception as e:
-        speak("Apologies, Master. I'm unable to play music at the moment.")
-
-
-
 def date():
     date = datetime.datetime.now()
     speak(date)

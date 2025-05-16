@@ -3,11 +3,23 @@ import edge_tts
 import uuid
 import os
 from playsound import playsound
+from colorama import Fore, Back, Style , init
+init()
+
 
 name = "| VORTEX : "
 voice = "en-GB-RyanNeural"
 rate = "-6%"
 pitch = "-25Hz"
+#-------------------------
+class Color:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    RESET = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 # ------------------------
 async def speech_setting(text, voice="en-GB-RyanNeural", rate="-10%", pitch="-2Hz"):

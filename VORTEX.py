@@ -1,61 +1,29 @@
-import speech_recognition as sr
 import os
 import sys
 
 project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
 
-
+#commands imports
 from commands.greet import *
 from commands.date import *
 from commands.time import *
 from commands.Weather import *
 from commands.Music import *
 
-
+#core imports
 from core.NetworkCheckerProtocol import *
 from core.Voice import *
 
-#------------------------
-r = sr.Recognizer()
-#------------------------
-#ConnectionProtocol()
+ConnectionProtocol()
 
 # print_colored("| VORTEX : Error Device Offline.",Color.RED) FOR ERROR MESSAGE
-queryList = []
-searchKey = ""
-query = ''
-bluetooth_headset_index = 1  # Adjust this index according to your Bluetooth headset
 
-def listen():
-    global query,queryList
-    # Capture audio input from the specified Bluetooth headset
-    try:
-        with sr.Microphone(device_index=bluetooth_headset_index) as source:
-                print("Listening..")
-                audio = r.listen(source)
-                recognizing = True
-    except Exception as e:
-        print("Error: ", e)
-        print_colored("| VORTEX :  Error: Unable to establish connection with the designated hardware. Please ensure that the device is properly configured and accessible.\n \t   Alternatively, there may be a technical issue preventing communication.",Color.RED)
-        return
-    # Recognize speech using Google Web Speech API
-    while recognizing == True:
-        try:
-            print("Recognizing...")
-            Vinput = r.recognize_google(audio)
-            query = Vinput
-            queryList = query.split()
-            print("| USER  :  " + query)
-            recognizing = False
-            return query,queryList
-        except sr.UnknownValueError:
-            print("Apologies, the audio wasn't clear enough.")
-        break
+
+
 
 def logic():
     speak(greet())
-    #DailyReminderLoader()
     global NAME_EXTRACTION_1, RECEIVER_NAME, RECEIVER_NAME_protocol2,reminderTime,searchKey
     global reminderMessage,reminderTime,reminderTimeAsk
     global query,queryList

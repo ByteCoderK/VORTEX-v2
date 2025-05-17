@@ -26,7 +26,7 @@ searchKey = ""
 query = ''
 bluetooth_headset_index = 1  # Adjust this index according to your Bluetooth headset
 
-def listen():
+def listener():
     global query,queryList
     # Capture audio input from the specified Bluetooth headset
     try:

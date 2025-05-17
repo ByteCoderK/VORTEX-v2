@@ -21,9 +21,13 @@ def logic():
     speak(greet())
 
     while True:
-        query, queryList = listen()
-        response = route_command(query, queryList)
+        try:
+            query, queryList = listener()
+            response = route_command(query, queryList)
+        except Exception as UnboundLocalError:
+            print("Audio not clear enough/Capture error")
         
+
         if response:
             speak(response)
         
@@ -32,7 +36,7 @@ def logic():
             print_colored("\n======================== | DEACTIVATED | ======================", Color.RED)
             sys.exit()
         else:
-            print_colored("| VORTEX : PASS-BY", Color.RED)
+            pass
 
 if __name__ == '__main__':
     logic()

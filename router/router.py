@@ -37,7 +37,9 @@ def route_command(query: str, queryList: list[str]) -> str:
 
     # Weather info
     elif "weather" in queryList:
-        return live_weather("delhi")  # TODO: replace with dynamic city input
+        speak("Please specify the city for which you want the weather information.")
+        city, queryList = listener()
+        return live_weather(city)  # TODO: replace with dynamic city input
 
     # Exit command
     elif any(word in query for word in ["exit", "stop", "quit", "close", "deactivate"]):

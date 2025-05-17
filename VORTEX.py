@@ -17,15 +17,8 @@ from core.Voice import *
 
 ConnectionProtocol()
 
-# print_colored("| VORTEX : Error Device Offline.",Color.RED) FOR ERROR MESSAGE
-
-
-
-
 def logic():
     speak(greet())
-    global NAME_EXTRACTION_1, RECEIVER_NAME, RECEIVER_NAME_protocol2,reminderTime,searchKey
-    global reminderMessage,reminderTime,reminderTimeAsk
     global query,queryList
     while True:
         #listen()
@@ -45,20 +38,6 @@ def logic():
              #   speakOnly("Error Device Offline.")
               #  print_colored("| VORTEX : Error Device Offline.",Color.RED)
 
-        #elif "reminder" in queryList:
-         #   speak("Sure, what's the reminder?")
-          #  reminderTimeAsk = input("USER  : ")
-           # if "everyday" in reminderMessage:
-            #    pass
-            #else:
-             #   numExtraction = reminderTimeAsk.split()
-              #  for x in numExtraction:
-               #     if x.isdigit():  # Check if x is a digit
-                #        reminderTime.append(int(x))
-                #for y in numExtraction:
-                 #   if "am" in y.lower() or "pm" in y.lower():
-                  #      reminderTime.append(y)
-                #print(reminderTime)
 
         elif any(word in query.lower() for word in ['stop', 'exit', 'quit', 'close', 'deactivate']):
             speak("GoodBye Master..")

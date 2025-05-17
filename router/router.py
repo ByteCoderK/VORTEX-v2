@@ -10,6 +10,7 @@ from commands.date import date
 from commands.time import current_time
 from commands.Weather import live_weather
 from commands.Music import play_music
+from commands.NeuralCore import *
 
 # core
 from core.NetworkCheckerProtocol import *
@@ -41,10 +42,6 @@ def route_command(query: str, queryList: list[str]) -> str:
         city, queryList = listener()
         return live_weather(city)  # TODO: replace with dynamic city input
 
-    # Exit command
-    elif any(word in query for word in ["exit", "stop", "quit", "close", "deactivate"]):
-        return "exit"
-
     # Unknown / fallback
     else:
-        return None
+        ask_ai(query)

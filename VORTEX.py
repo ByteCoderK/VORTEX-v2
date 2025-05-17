@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 # commands
 from commands.greet import greet
+from commands.NeuralCore import *
 # core
 from core.NetworkCheckerProtocol import *
 from core.Voice import *
@@ -36,7 +37,7 @@ def logic():
             print_colored("\n======================== | DEACTIVATED | ======================", Color.RED)
             sys.exit()
         else:
-            pass
+            print_colored("| VORTEX :  " + ask_ai(query), Color.CYAN)
 
 if __name__ == '__main__':
     logic()

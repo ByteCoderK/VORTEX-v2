@@ -28,11 +28,10 @@ def logic():
         except Exception as UnboundLocalError:
             print("Audio not clear enough/Capture error")
         
-
         if response:
             speak(response)
         
-        elif any(word in query.lower() for word in ['stop', 'exit', 'quit', 'close', 'deactivate']):
+        elif any(word in query.lower() for word in ['stop', 'exit', 'quit', 'close', 'deactivate','terminate','shutdown']):
             speak("Goodbye Master.")
             print_colored("\n======================== | DEACTIVATED | ======================", Color.RED)
             sys.exit()

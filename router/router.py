@@ -16,7 +16,6 @@ from commands.NeuralCore import *
 from core.NetworkCheckerProtocol import *
 from core.Voice import *
 from core.Listener import *
-response = 'this is the response'
 def route_command(query: str, queryList: list[str]) -> str:
     query = query.lower()
 
@@ -26,7 +25,6 @@ def route_command(query: str, queryList: list[str]) -> str:
 
     # Time query
     elif "time" in queryList:
-        print('hello')
         return current_time()
 
     # Date query

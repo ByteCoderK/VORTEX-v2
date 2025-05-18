@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from router.router import route_command
-
+#
 app = FastAPI()
 
 class Query(BaseModel):

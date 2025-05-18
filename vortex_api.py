@@ -11,11 +11,3 @@ class Query(BaseModel):
 def ask(payload: Query):
     response = route_command(payload.query, payload.query.lower().split())
     return {"response": response}
-
-@app.get("/")
-def status():
-    return {"status": "VORTEX is Initialized"}
-
-@app.get("/routes")
-def list_routes():
-    return [route.path for route in app.routes]

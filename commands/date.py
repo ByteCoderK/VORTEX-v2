@@ -1,6 +1,5 @@
 import datetime
 
 def date():
-    date = datetime.datetime.now()
-    return date
+    return datetime.now().strftime("Today is %B %d, %Y")
 

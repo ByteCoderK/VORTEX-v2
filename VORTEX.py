@@ -7,8 +7,11 @@ def logic():
         
         data = res.json()
         print("DEBUG:", data)  # Add this line to see raw response
-        print("VORTEX:", data["response"])
         
+        if "response" in data:
+            print("VORTEX:", data["response"])
+        else:
+            print("VORTEX: Error",data.get("details","Unknown error"))        
 
 
 if __name__ == '__main__':

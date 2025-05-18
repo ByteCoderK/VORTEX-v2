@@ -3,7 +3,7 @@ import requests
 def logic():
     while True:
         query = input("You: ")
-        res = requests.post("https://vortex-v2-7.onrender.com", json={"query": query})
+        res = requests.post("https://vortex-v2-8.onrender.com", json={"query": query})
         
         data = res.json()
         print("DEBUG:", data)  # Add this line to see raw response

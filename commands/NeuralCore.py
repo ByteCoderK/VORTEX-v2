@@ -31,3 +31,7 @@ def ask_ai(query: str) -> str:
         return completion.choices[0].message.content
     except Exception as e:
         return f"Sorry, I couldn't reach the AI: {str(e)}"
+
+
+#query = input("You: ")
+#print(ask_ai(query))

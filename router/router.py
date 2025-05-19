@@ -43,4 +43,4 @@ def route_command(query: str, queryList: list[str]) -> str:
 
     # Unknown / fallback
     else:
-        ask_ai(query)
+        return ask_ai(query)

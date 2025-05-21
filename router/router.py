@@ -22,8 +22,8 @@ def route_command(query: str, queryList: list[str]) -> str:
     # Greetings
     if any(word in queryList for word in ["hi", "hello", "hey"]):
         return greet()
+        
 
-    # Time query
     elif "time" in queryList:
         return current_time()
 
@@ -38,7 +38,7 @@ def route_command(query: str, queryList: list[str]) -> str:
     # Weather info
     elif "weather" in queryList:
         speak("Please specify the city for which you want the weather information.")
-        city, queryList = listener()
+        city = input("Enter city name: ")  # TODO: replace with dynamic input
         return live_weather(city)  # TODO: replace with dynamic city input
 
     # Unknown / fallback

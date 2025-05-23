@@ -1,6 +1,10 @@
-# commands/ai.py
-
+import sys
+import os 
+project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
+sys.path.append(project_root)
 from openai import OpenAI
+#from core.NeuroCache import *
+
 
 # Configure your OpenRouter client
 client = OpenAI(
@@ -30,8 +34,9 @@ def ask_ai(query: str) -> str:
         )
         return completion.choices[0].message.content
     except Exception as e:
-        return f"Sorry, I couldn't reach the AI: {str(e)}"
+        print(f"An error occurred: {e}")
+        return "Sorry, I couldn't process your request."
 
 
-#query = input("You: ")
-#print(ask_ai(query))
+query = input("You: ")
+print(ask_ai(query))

@@ -1,5 +1,11 @@
-from openai import OpenAI
+import os
+import sys
 import json
+import threading
+from openai import OpenAI
+project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
+sys.path.append(project_root)
+from commands.NeuralCore import *
 
 MemoryCACHE = []
 
@@ -9,6 +15,7 @@ client = OpenAI(
 )
 
 def rememberMeProtocol(query: str) -> dict:
+    print("rememberMeProtocol")
     try:
         completion = client.chat.completions.create(
             model="meta-llama/llama-3.3-8b-instruct:free",
@@ -22,39 +29,41 @@ def rememberMeProtocol(query: str) -> dict:
 {"reminders": ["Call mom"]} for tasks
 {} for no data"""
                 },
-                {"role": "user", "content": query}
-            ],
-            temperature=0.0
-        )
+                {
+                    "role": "user",
+                    "content": query  # <- This is how you pass the user question
+                }
+                ],
+            extra_headers={
+                "X-Title": "VORTEX",
+                "HTTP-Referer": "http://localhost"  # Optional
+                },
+            extra_body={}
+            )
         
         # Get the raw response content
         response_text = completion.choices[0].message.content
+        print(f"Response Text: {response_text}")
         # Parse the JSON response
         response_data = json.loads(response_text)
+        print(f"Parsed JSON: {response_data}")
+        
         # Store in memory if not empty
         if response_data:
             MemoryCACHE.append(response_data)
-        
-        return response_data
-        
+            print("fi else loop")
+            print(f"MemoryCACHE: {MemoryCACHE}")
+        else:
+            print("MemoryCACHE: empty")
     except json.JSONDecodeError:
         print("Received invalid JSON response")
-        return {}
+        return 'eeeeeeeeeeeeeeeeeeeeeeeeee'
     except Exception as e:
         print(f"Error: {e}")
-        return {}
-
-while True:
-    try:
-        #query = input("You: ")
-        if query.lower() in ('exit', 'quit'):
-            print("Stored memories:", MemoryCACHE)
-            break
-            
-        response = rememberMeProtocol(query)
-        print("Response:", response)
-        
-    except KeyboardInterrupt:
-        print("\nFinal memories:", MemoryCACHE)
-        break
-
+        return '-----------------'
+    
+t1= threading.Thread(target=ask_ai)
+t2 = threading.Thread(target=rememberMeProtocol, args=(query,))  
+query = 'hi my name is asher'
+#t1.start()  
+t2.start()

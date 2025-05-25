@@ -8,7 +8,7 @@ client = OpenAI(
 
 
 aiModels = {
-    'ai_I': 'meta-llama/llama-33-8b-instruct:free',
+    'ai_I': 'meta-llama/llama-3.3-8b-instruct:free',
     'ai_II': "qwen/qwen3-32b:free",
     'ai_III': "mistralai/devstral-small:free",
     'ai_IV': "nousresearch/deephermes-3-mistral-24b-preview:free"
@@ -45,6 +45,7 @@ def ask_ai(query=None,model_key='ai_I',first_call=True) -> str:
         current_index = model_keys.index(model_key)
         if current_index + 1 < len(model_keys):
             next_model_key = model_keys[current_index + 1]
-            ask_ai(query,next_model_key)
+            print(ask_ai(query,next_model_key))
         else:
             return "All models failed.."
+        

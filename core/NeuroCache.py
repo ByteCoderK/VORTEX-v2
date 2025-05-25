@@ -70,4 +70,4 @@ query = 'hi my name is asher'
 t1= threading.Thread(target=ask_ai)
 t2 = threading.Thread(target=rememberMeProtocol, args=(query,model_key))  
 #t1.start()  
-t2.start()
+#t2.start()

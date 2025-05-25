@@ -1,6 +1,3 @@
-import sys
-import os 
-import threading
 from openai import OpenAI
 
 # Configure your OpenRouter client

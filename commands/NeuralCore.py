@@ -41,7 +41,7 @@ def ask_ai(query=None,model_key='ai_I',first_call=True) -> str:
             extra_body={}
             )
         response = completion.choices[0].message.content
-        print(f"VORTEX: {response}") 
+        return f"VORTEX: {response}"
     except Exception as e:
         print(f"Error with model {model_key}: {e}")
         # Fallback logic: try next model
@@ -49,12 +49,10 @@ def ask_ai(query=None,model_key='ai_I',first_call=True) -> str:
         current_index = model_keys.index(model_key)
         if current_index + 1 < len(model_keys):
             next_model_key = model_keys[current_index + 1]
-            print(f"Falling back to model: {next_model_key}")
             ask_ai(query,next_model_key)
         else:
-            print("All models failed.")
-            return None
-        
+            return "All models failed."
+
 ask_ai()
 
 

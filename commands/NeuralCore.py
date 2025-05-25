@@ -37,10 +37,9 @@ def ask_ai(query=None,model_key='ai_I',first_call=True) -> str:
                 },
             extra_body={}
             )
-        response = completion.choices[0].message.content
+        response = completion.choices[0].message.content + "\n\t\t" + "- Powered by " + next_model_key
         return response
     except Exception as e:
-        print(f"Error with model {model_key}: {e}")
         # Fallback logic: try next model
         model_keys = list(aiModels.keys())
         current_index = model_keys.index(model_key)

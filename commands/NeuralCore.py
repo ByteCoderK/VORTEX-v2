@@ -49,8 +49,3 @@ def ask_ai(query=None,model_key='ai_I',first_call=True) -> str:
             ask_ai(query,next_model_key)
         else:
             return "All models failed."
-
-ask_ai()
-
-
-

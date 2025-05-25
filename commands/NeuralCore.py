@@ -3,20 +3,27 @@ import os
 import threading
 from openai import OpenAI
 
-
-query = 'hello'
 # Configure your OpenRouter client
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key="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"  # Replace this with your actual API key
 )
 
-def ask_ai() -> str:
-    
-    query = input("You: ")
+
+aiModels = {
+    'ai_I': 'meta-llama/llama-3.3-8b-instruct:free',
+    'ai_II': "qwen/qwen3-32b:free",
+    'ai_III': "mistralai/devstral-small:free",
+    'ai_IV': "nousresearch/deephermes-3-mistral-24b-preview:free"
+}
+
+
+def ask_ai(query=None,model_key='ai_I',first_call=True) -> str:
+    if first_call and not query:
+        query = input("You: ")
     try:
         completion = client.chat.completions.create(
-            model="meta-llama/llama-3.3-8b-instruct:free",
+            model=aiModels[model_key],
             messages=[
                 {
                     "role": "system",
@@ -36,8 +43,19 @@ def ask_ai() -> str:
         response = completion.choices[0].message.content
         print(f"VORTEX: {response}") 
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return "Sorry, I couldn't process your request."
+        print(f"Error with model {model_key}: {e}")
+        # Fallback logic: try next model
+        model_keys = list(aiModels.keys())
+        current_index = model_keys.index(model_key)
+        if current_index + 1 < len(model_keys):
+            next_model_key = model_keys[current_index + 1]
+            print(f"Falling back to model: {next_model_key}")
+            ask_ai(query,next_model_key)
+        else:
+            print("All models failed.")
+            return None
+        
+ask_ai()
 
 
 

@@ -19,12 +19,7 @@ from core.Listener import *
 def route_command(query: str, queryList: list[str]) -> str:
     query = query.lower()
 
-    # Greetings
-    if any(word in queryList for word in ["hi", "hello", "hey"]):
-        return greet()
-        
-
-    elif "time" in queryList:
+    if "time" in queryList:
         return current_time()
 
     # Date query

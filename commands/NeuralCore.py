@@ -8,7 +8,7 @@ client = OpenAI(
 
 
 aiModels = {
-    'ai_I': 'meta-llama/llama-3.3-8b-instruct:free',
+    'ai_I': 'meta-llama/llama-33-8b-instruct:free',
     'ai_II': "qwen/qwen3-32b:free",
     'ai_III': "mistralai/devstral-small:free",
     'ai_IV': "nousresearch/deephermes-3-mistral-24b-preview:free"
@@ -38,7 +38,7 @@ def ask_ai(query=None,model_key='ai_I',first_call=True) -> str:
             extra_body={}
             )
         response = completion.choices[0].message.content
-        return f"VORTEX: {response}"
+        return response
     except Exception as e:
         print(f"Error with model {model_key}: {e}")
         # Fallback logic: try next model

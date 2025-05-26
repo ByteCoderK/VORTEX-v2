@@ -47,7 +47,7 @@ def rememberMeProtocol(query,CURRENT_key):
         )
         response_text = completion.choices[0].message.content
         response_data = json.loads(response_text)    # Extract JSON data
-        print(f"Parsed JSON: {response_data}")
+        return f"Parsed JSON: {response_data}"
     except Exception as e:
         # Fallback logic: try next model
         current_index = model_keys.index(CURRENT_key)
@@ -55,4 +55,4 @@ def rememberMeProtocol(query,CURRENT_key):
             next_model_key = model_keys[current_index + 1]
             rememberMeProtocol(query, next_model_key)
         else:
-            print("All models failed.")
+            return "All models failed."

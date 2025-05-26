@@ -4,9 +4,9 @@ def logic():
     while True:
         query = input("You: ")
         res = requests.post("https://vortex-v2.onrender.com/ask", json={"query": query})
-        print("RAW:", res.text)  
+        #print("RAW:", res.text)  
         data = res.json()
-        print("DEBUG:", data)  # Add this line to see raw response
+        #print("DEBUG:", data)  # Add this line to see raw response
         
         if "response" in data:
             print("VORTEX:", data["response"])

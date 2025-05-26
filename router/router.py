@@ -45,4 +45,8 @@ def route_command(query: str, queryList: list[str]) -> str:
 
     # Unknown / fallback
     else:
-        return t1.start(),t2.start()
+        t1.start()
+        t2.start()
+        
+        t1.join()
+        t2.join()

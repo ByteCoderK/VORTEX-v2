@@ -21,7 +21,6 @@ def rememberMeProtocol(query,CURRENT_key):
     api_key=CURRENT_key
 )
     try:
-        print(query)
         completion = client.chat.completions.create(
             model='meta-llama/llama-3.3-8b-instruct:free',
             messages=[
@@ -47,14 +46,8 @@ def rememberMeProtocol(query,CURRENT_key):
             extra_body={}
         )
         response_text = completion.choices[0].message.content
-        print(f"Response Text: {response_text}")
-        response_data = json.loads(response_text)
+        response_data = json.loads(response_text)    # Extract JSON data
         print(f"Parsed JSON: {response_data}")
-        if response_data:
-            MemoryCACHE.append(response_data)
-            print(f"MemoryCACHE: {MemoryCACHE}")
-        else:
-            print("MemoryCACHE: empty")
     except Exception as e:
         # Fallback logic: try next model
         current_index = model_keys.index(CURRENT_key)

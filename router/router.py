@@ -19,8 +19,9 @@ from core.Voice import *
 from core.Listener import *
 from core.NeuroCache import *
 
-t1= threading.Thread(target=ask_ai, args=(query))
-t2 = threading.Thread(target=rememberMeProtocol, args=(query,CURRENT_key))  
+first_call = True
+t1= threading.Thread(target=ask_ai, args=(query,CURRENT_key,first_call))
+t2 = threading.Thread(target=rememberMeProtocol, args=(query,CURRENT_key)) 
 
 def route_command(query: str, queryList: list[str]) -> str:
     query = query.lower()

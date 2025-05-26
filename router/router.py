@@ -28,25 +28,21 @@ def route_command(query: str, queryList: list[str]) -> str:
 
     if "time" in queryList:
         return current_time()
-
-    # Date query
     elif "date" in queryList:
         return date()
-
-    # Music playback
     elif "music" in queryList or "play" in queryList:
         return play_music()
-
-    # Weather info
     elif "weather" in queryList:
-        speak("Please specify the city for which you want the weather information.")
-        city = input("Enter city name: ")  # TODO: replace with dynamic input
-        return live_weather(city)  # TODO: replace with dynamic city input
-
-    # Unknown / fallback
+        speak("Please specify the city for weather info.")
+        city = input("Enter city name: ")  # Use your voice input instead of hardcoded input
+        return live_weather(city)
     else:
-        t1.start()
-        t2.start()
+        # Create NEW threads each time (critical fix)
+        ai_thread = threading.Thread(target=ask_ai, args=(query, CURRENT_key, True))
+        memory_thread = threading.Thread(target=rememberMeProtocol, args=(query, CURRENT_key))
         
-        t1.join()
-        t2.join()
+        ai_thread.start()
+        memory_thread.start()
+        
+        ai_thread.join()
+        memory_thread.join()

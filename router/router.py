@@ -1,5 +1,6 @@
 import os
 import sys
+import threading
 
 project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
@@ -16,6 +17,11 @@ from commands.NeuralCore import *
 from core.NetworkCheckerProtocol import *
 from core.Voice import *
 from core.Listener import *
+from core.NeuroCache import *
+
+t1= threading.Thread(target=ask_ai, args=(query))
+t2 = threading.Thread(target=rememberMeProtocol, args=(query,CURRENT_key))  
+
 def route_command(query: str, queryList: list[str]) -> str:
     query = query.lower()
 
@@ -38,4 +44,4 @@ def route_command(query: str, queryList: list[str]) -> str:
 
     # Unknown / fallback
     else:
-        return ask_ai(query)
+        return t1.start(),t2.start()

@@ -8,20 +8,22 @@ sys.path.append(project_root)
 from commands.NeuralCore import *
 
 MemoryCACHE = []
-keys = {'ai_I' : 'meta-llama/llama-3.3-8b-instruct:free','ai_II' : "qwen/qwen3-32b:free",
-           'ai_III' : "mistralai/devstral-small:free",'ai_IV' : "nousresearch/deephermes-3-mistral-24b-preview:free"}
-model_key='ai_I'
-
-client = OpenAI(
+keys = {
+    'KEY_1': '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',
+    'KEY_2': "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",
+    'KEY_3': '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',
+}
+CURRENT_key=keys["KEY_1"]
+def rememberMeProtocol(query,CURRENT_key):
+    model_keys = list(keys.values())
+    client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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"
+    api_key=CURRENT_key
 )
-
-def rememberMeProtocol(query, model_key):
     try:
         print(query)
         completion = client.chat.completions.create(
-            model=keys[model_key],
+            model='meta-llama/llama-3.3-8b-instruct:free',
             messages=[
                 {
                     "role": "system",
@@ -54,20 +56,10 @@ def rememberMeProtocol(query, model_key):
         else:
             print("MemoryCACHE: empty")
     except Exception as e:
-        print(f"Error with model {model_key}: {e}")
         # Fallback logic: try next model
-        model_keys = list(keys.keys())
-        current_index = model_keys.index(model_key)
+        current_index = model_keys.index(CURRENT_key)
         if current_index + 1 < len(model_keys):
             next_model_key = model_keys[current_index + 1]
-            print(f"Falling back to model: {next_model_key}")
             rememberMeProtocol(query, next_model_key)
         else:
             print("All models failed.")
-
-
-query = 'hi my name is asher'    
-t1= threading.Thread(target=ask_ai)
-t2 = threading.Thread(target=rememberMeProtocol, args=(query,model_key))  
-#t1.start()  
-#t2.start()

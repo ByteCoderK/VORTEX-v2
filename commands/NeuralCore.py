@@ -6,10 +6,6 @@ keys = {
     'KEY_3': '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',
 }
 
-
-# Configure your OpenRouter client
-
-
 def ask_ai(query=None,CURRENT_key=keys["KEY_1"],first_call=True) -> str:
     model_keys = list(keys.values())
     client = OpenAI(
@@ -48,4 +44,3 @@ def ask_ai(query=None,CURRENT_key=keys["KEY_1"],first_call=True) -> str:
             return ask_ai(query, next_model_key, first_call=False)
         else:
             print(f"All models failed..",e)
-ask_ai()

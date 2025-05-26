@@ -8,7 +8,7 @@ sys.path.append(project_root)
 from commands.NeuralCore import *
 
 MemoryCACHE = []
-aiModels = {'ai_I' : 'meta-llama/llama-3.3-8b-instruct:free','ai_II' : "qwen/qwen3-32b:free",
+keys = {'ai_I' : 'meta-llama/llama-3.3-8b-instruct:free','ai_II' : "qwen/qwen3-32b:free",
            'ai_III' : "mistralai/devstral-small:free",'ai_IV' : "nousresearch/deephermes-3-mistral-24b-preview:free"}
 model_key='ai_I'
 
@@ -21,7 +21,7 @@ def rememberMeProtocol(query, model_key):
     try:
         print(query)
         completion = client.chat.completions.create(
-            model=aiModels[model_key],
+            model=keys[model_key],
             messages=[
                 {
                     "role": "system",
@@ -56,7 +56,7 @@ def rememberMeProtocol(query, model_key):
     except Exception as e:
         print(f"Error with model {model_key}: {e}")
         # Fallback logic: try next model
-        model_keys = list(aiModels.keys())
+        model_keys = list(keys.keys())
         current_index = model_keys.index(model_key)
         if current_index + 1 < len(model_keys):
             next_model_key = model_keys[current_index + 1]

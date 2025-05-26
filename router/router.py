@@ -19,9 +19,6 @@ from core.Voice import *
 from core.Listener import *
 from core.NeuroCache import *
 
-first_call = True
-t1= threading.Thread(target=ask_ai, args=(query,CURRENT_key,first_call))
-t2 = threading.Thread(target=rememberMeProtocol, args=(query,CURRENT_key)) 
 
 def route_command(query: str, queryList: list[str]) -> str:
     query = query.lower()
@@ -38,11 +35,12 @@ def route_command(query: str, queryList: list[str]) -> str:
         return live_weather(city)
     else:
         # Create NEW threads each time (critical fix)
-        ai_thread = threading.Thread(target=ask_ai, args=(query, CURRENT_key, True))
-        memory_thread = threading.Thread(target=rememberMeProtocol, args=(query, CURRENT_key))
+        ai_thread = threading.Thread(target=ask_ai, args=(query,keys["KEY_1"], True))
+        #memory_thread = threading.Thread(target=rememberMeProtocol, args=(query, CURRENT_key))
         
         ai_thread.start()
-        memory_thread.start()
+        #memory_thread.start()
         
-        ai_thread.join()
-        memory_thread.join()
+        ai = ai_thread.join()
+        #memory_thread.join()
+        print(f'AI thread started',ai)

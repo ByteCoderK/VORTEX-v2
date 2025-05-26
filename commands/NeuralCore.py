@@ -4,6 +4,7 @@ keys = {
     'KEY_1': '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',
     'KEY_2': "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",
     'KEY_3': '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',
+    'KEY_4': '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'
 }
 
 def ask_ai(query,CURRENT_key=keys["KEY_1"],first_call=True) -> str:
@@ -43,4 +44,4 @@ def ask_ai(query,CURRENT_key=keys["KEY_1"],first_call=True) -> str:
             next_model_key = model_keys[current_index + 1]
             return ask_ai(query, next_model_key, first_call=False)
         else:
-            return f"All models failed..",e
+            return f"All models failed.."

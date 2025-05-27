@@ -5,7 +5,7 @@ import threading
 from openai import OpenAI
 project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
-from commands.NeuralCore import *
+from commands.NeuralCore import query
 
 MemoryCACHE = []
 keys = {
@@ -54,6 +54,6 @@ def rememberMeProtocol(query,CURRENT_key):
         current_index = model_keys.index(CURRENT_key)
         if current_index + 1 < len(model_keys):
             next_model_key = model_keys[current_index + 1]
-            rememberMeProtocol(query, next_model_key)
+            return rememberMeProtocol(query, next_model_key)
         else:
             return "All models failed."

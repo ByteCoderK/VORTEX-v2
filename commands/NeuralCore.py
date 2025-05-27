@@ -6,7 +6,6 @@ keys = {
     'KEY_3': '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',
     'KEY_4': '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'
 }
-
 def ask_ai(query,CURRENT_key=keys["KEY_1"],first_call=True) -> str:
     model_keys = list(keys.values())
     client = OpenAI(

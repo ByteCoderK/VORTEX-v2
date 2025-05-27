@@ -38,9 +38,9 @@ def route_command(query: str, queryList: list[str]) -> str:
                 # Submit the AI tas
             ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
             # If you need memory processing too:
-            # memory_future = executor.submit(rememberMeProtocol, query, CURRENT_key)            
+            memory_future = executor.submit(rememberMeProtocol, query, CURRENT_key)            
             # Get the AI result
             ai_result = ai_future.result()
             # If using memory:
-            # memory_result = memory_future.result()            
-            return ai_result
+            memory_result = memory_future.result()            
+            return ai_result, memory_result

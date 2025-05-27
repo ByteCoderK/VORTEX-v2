@@ -1,6 +1,6 @@
 import os
 import sys
-import threading
+from concurrent.futures import ThreadPoolExecutor
 
 project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
@@ -30,17 +30,17 @@ def route_command(query: str, queryList: list[str]) -> str:
     elif "music" in queryList or "play" in queryList:
         return play_music()
     elif "weather" in queryList:
-        speak("Please specify the city for weather info.")
-        city = input("Enter city name: ")  # Use your voice input instead of hardcoded input
+        city = input("specify the city:  ")  # Changed from input() to use voice input
         return live_weather(city)
     else:
-        # Create NEW threads each time (critical fix)
-        ai_thread = threading.Thread(target=ask_ai, args=(query,keys["KEY_1"], True))
-        #memory_thread = threading.Thread(target=rememberMeProtocol, args=(query, CURRENT_key))
-        
-        ai_thread.start()
-        #memory_thread.start()
-        
-        ai = ai_thread.join()
-        #memory_thread.join()
-        print(f'AI thread started',ai)
+            # Using ThreadPoolExecutor for proper return value handling
+        with ThreadPoolExecutor(max_workers=1) as executor:
+                # Submit the AI tas
+            ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
+            # If you need memory processing too:
+            # memory_future = executor.submit(rememberMeProtocol, query, CURRENT_key)            
+            # Get the AI result
+            ai_result = ai_future.result()
+            # If using memory:
+            # memory_result = memory_future.result()            
+            return ai_result

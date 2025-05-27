@@ -57,6 +57,3 @@ def rememberMeProtocol(query,CURRENT_key):
             rememberMeProtocol(query, next_model_key)
         else:
             return "All models failed."
-        
-m = rememberMeProtocol("Remember my name is John and I like pizza", CURRENT_key)
-print(m)

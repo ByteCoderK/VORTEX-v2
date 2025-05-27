@@ -44,4 +44,4 @@ def ask_ai(query,CURRENT_key=keys["KEY_1"],first_call=True) -> str:
             next_model_key = model_keys[current_index + 1]
             return ask_ai(query, next_model_key, first_call=False)
         else:
-            return f"All models failed.."
+            return f"All models failed..",e

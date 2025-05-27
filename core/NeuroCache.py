@@ -5,7 +5,7 @@ import threading
 from openai import OpenAI
 project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
-from commands.NeuralCore import query
+from commands.NeuralCore import*
 
 MemoryCACHE = []
 keys = {

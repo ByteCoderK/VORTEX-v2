@@ -6,7 +6,6 @@ from openai import OpenAI
 project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
 from commands.NeuralCore import*
-file_path = "C:\Users\User One\Desktop\VORTEX-v2\core\MEMORY.txt"
 
 
 MemoryCACHE = []
@@ -49,8 +48,7 @@ def rememberMeProtocol(query,CURRENT_key=keys["KEY_1"]):
         )
         response_text = completion.choices[0].message.content
         response_data = json.loads(response_text)    # Extract JSON data
-        with open(file_path, "w") as file:
-            file.write(response_text)
+        print(response_data)  # Print the JSON data for debugging
     except Exception as e:
         # Fallback logic: try next model
         current_index = model_keys.index(CURRENT_key)

@@ -6,6 +6,8 @@ from openai import OpenAI
 project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
 from commands.NeuralCore import*
+file_path = "C:\Users\User One\Desktop\VORTEX-v2\core\MEMORY.txt"
+
 
 MemoryCACHE = []
 keys = {
@@ -14,8 +16,7 @@ keys = {
     'KEY_3': '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',
     'KEY_4': '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'
 }
-CURRENT_key=keys["KEY_1"]
-def rememberMeProtocol(query,CURRENT_key):
+def rememberMeProtocol(query,CURRENT_key=keys["KEY_1"]):
     model_keys = list(keys.values())
     client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
@@ -48,7 +49,8 @@ def rememberMeProtocol(query,CURRENT_key):
         )
         response_text = completion.choices[0].message.content
         response_data = json.loads(response_text)    # Extract JSON data
-        return f"Parsed JSON: {response_data}"
+        with open(file_path, "w") as file:
+            file.write(response_text)
     except Exception as e:
         # Fallback logic: try next model
         current_index = model_keys.index(CURRENT_key)

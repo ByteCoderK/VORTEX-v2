@@ -34,7 +34,7 @@ def route_command(query: str, queryList: list[str]) -> str:
         return live_weather(city)
     else:
             # Using ThreadPoolExecutor for proper return value handling
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        with ThreadPoolExecutor(max_workers=2) as executor:
             ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
             memory_future = executor.submit(rememberMeProtocol, query,keys["KEY_1"])            
             ai_result = ai_future.result()

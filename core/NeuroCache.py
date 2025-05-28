@@ -48,7 +48,7 @@ def rememberMeProtocol(query,CURRENT_key=keys["KEY_1"]):
         )
         response_text = completion.choices[0].message.content
         response_data = json.loads(response_text)    # Extract JSON data
-        print(response_text)  # Print the JSON data for debugging
+        return "MEMORY EXTRACTED" + response_text  # Print the JSON data for debugging
     except Exception as e:
         # Fallback logic: try next model
         current_index = model_keys.index(CURRENT_key)

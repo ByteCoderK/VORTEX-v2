@@ -32,6 +32,7 @@ def rememberMeProtocol(query,CURRENT_key=keys["KEY_1"]):
 {"country": "France"} for locations
 {"preferences": ["pizza"]} for likes
 {"reminders": ["Call mom"]} for tasks
+    {"friends_name": ["sonu","arun"]} for names
 {} for no data,SPEACIAL NOTE : NO OTHER RESPONSE NEEDED!! """
 
                 },

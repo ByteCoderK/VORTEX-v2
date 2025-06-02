@@ -2,7 +2,7 @@ import requests
 from fastapi import FastAPI, Request
 
 app = FastAPI()
-
+#
 ESP8266_IP = "http://192.168.1.100"  # Replace with your actual ESP8266 IP
 
 @app.get("/command")

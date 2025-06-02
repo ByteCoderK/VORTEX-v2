@@ -3,7 +3,7 @@ import sys
 import logging
 import random
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
-
+#
 
 standby_word = ["standby","preparing","engaging", "processing", "charging","optimizing", "booting up", "syncing", "initializing", "configuring", "diagnosing","executing", "operating", "synchronizing"]
 standby_msg = "Alright Master, " + random.choice(standby_word) + "..."

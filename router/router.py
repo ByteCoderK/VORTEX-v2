@@ -24,7 +24,7 @@ logging.debug(f"Project root set to: {project_root}")
 
 # commands
 try:
-    from commmands.XAUTOMATION import *
+    from commands.XAUTOMATION import *
     from commands.greet import greet
     from commands.date import date
     from commands.time import current_time
@@ -75,36 +75,36 @@ def route_command(query: str, queryList: list[str]):
         if queryList[0] == "turn" and queryList[1] == "on":
             if 'light' in queryList:
                 speak(standby_msg)
-                RoomControl(1, '1')  # RELAY 1 ON 
+                RoomControl(1, 'ON')  # RELAY 1 ON 
             elif 'fan' in queryList:
                 speak(standby_msg)
-                RoomControl(2, '3')  # RELAY 3 ON
+                RoomControl(2, 'ON')  # RELAY 3 ON
             elif 'tv' in queryList:
                 speak(standby_msg)
-                RoomControl(2, '5')  # RELAY 5 ON
+                RoomControl(3, 'ON')  # RELAY 5 ON
             elif 'monitor' in queryList:
                 speak(standby_msg)
-                RoomControl(2, '7')  # RELAY 7 ON
+                RoomControl(4, 'ON')  # RELAY 7 ON
             elif 'all' in queryList:
                 speak(standby_msg)
-                RoomControl(1, '1'),RoomControl(2, '3'),RoomControl(2, '5'),RoomControl(2, '7')
+                RoomControl(1, 'ON'),RoomControl(2, 'ON'),RoomControl(3, 'ON'),RoomControl(4, 'ON')
     # Check if the first word is "off" or "turn off"
         elif queryList[0] == "off" or (queryList[0] == "turn" and queryList[1] == "off"):
             if 'light' in queryList:
-                speak("Deactivating device,Please Wait...")
-                RoomControl(1, '2')  # RELAY 2 OFF
+                speak(standby_msg)
+                RoomControl(1, 'OFF')  # RELAY 1 ON 
             elif 'fan' in queryList:
-                speak("Deactivating device,Standby...")
-                RoomControl(2, '4')  # RELAY 4 OFF
+                speak(standby_msg)
+                RoomControl(2, 'OFF')  # RELAY 3 ON
             elif 'tv' in queryList:
-                speak("Deactivating device,Dengaging...")
-                RoomControl(2, '6')  # RELAY 6 OFF
+                speak(standby_msg)
+                RoomControl(3, 'OFF')  # RELAY 5 ON
             elif 'monitor' in queryList:
-                speak("Deactivating device,Preparing...")
-                RoomControl(2, '8')  # RELAY 8 OFF
+                speak(standby_msg)
+                RoomControl(4, 'OFF')  # RELAY 7 ON
             elif 'all' in queryList:
-                speak("Deactivating all devices, Please wait...")
-                RoomControl(1, '2'),RoomControl(2, '4'),RoomControl(2, '6'),RoomControl(2, '8')
+                speak(standby_msg)
+                RoomControl(1, 'OFF'),RoomControl(2, 'OFF'),RoomControl(3, 'OFF'),RoomControl(4, 'OFF')
 
         else:
             logging.info("Executing AI and memory protocols")
@@ -138,3 +138,4 @@ def route_command(query: str, queryList: list[str]):
     except Exception as e:
         logging.critical(f"Unexpected error in route_command: {str(e)}")
         return f"Command error: {str(e)}", None
+    

@@ -58,7 +58,3 @@ def RoomControl(relay_number: int, state: str):
     else:
         print("\u274C Invalid relay number or state")
 
-# Wait for responses
-time.sleep(10)
-client.loop_stop()
-client.disconnect()

@@ -38,21 +38,21 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println("Relay OFF");
   }
     else if (msg == "3") {
-    digitalWrite(relay2, HIGH); // Relay OFF
+    digitalWrite(relay2, LOW); // Relay OFF
     Serial.println("Relay OFF");
   } else if (msg == "4") {
     digitalWrite(relay2, HIGH); // Relay OFF
     Serial.println("Relay OFF");
   }
     else if (msg == "5") {
-    digitalWrite(relay3, HIGH); // Relay OFF
+    digitalWrite(relay3, LOW); // Relay OFF
     Serial.println("Relay OFF");
   } else if (msg == "6") {
     digitalWrite(relay3, HIGH); // Relay OFF
     Serial.println("Relay OFF");
   }
     else if (msg == "7") {
-    digitalWrite(relay4, HIGH); // Relay OFF
+    digitalWrite(relay4, LOW); // Relay OFF
     Serial.println("Relay OFF");
   } else if (msg == "8") {
     digitalWrite(relay4, HIGH); // Relay OFF

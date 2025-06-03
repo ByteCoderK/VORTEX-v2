@@ -71,39 +71,29 @@ def route_command(query: str, queryList: list[str]):
             result = live_weather(city)
             logging.debug(f"Weather result: {result}")
             return result, None
-
-        if queryList[0] == "turn" and queryList[1] == "on":
+        
+        elif queryList[0] == "turn" and queryList[1] == "on":
             if 'light' in queryList:
-                speak(standby_msg)
                 RoomControl(1, 'ON')  # RELAY 1 ON 
             elif 'fan' in queryList:
-                speak(standby_msg)
                 RoomControl(2, 'ON')  # RELAY 3 ON
             elif 'tv' in queryList:
-                speak(standby_msg)
                 RoomControl(3, 'ON')  # RELAY 5 ON
             elif 'monitor' in queryList:
-                speak(standby_msg)
                 RoomControl(4, 'ON')  # RELAY 7 ON
             elif 'all' in queryList:
-                speak(standby_msg)
                 RoomControl(1, 'ON'),RoomControl(2, 'ON'),RoomControl(3, 'ON'),RoomControl(4, 'ON')
     # Check if the first word is "off" or "turn off"
         elif queryList[0] == "off" or (queryList[0] == "turn" and queryList[1] == "off"):
             if 'light' in queryList:
-                speak(standby_msg)
                 RoomControl(1, 'OFF')  # RELAY 1 ON 
             elif 'fan' in queryList:
-                speak(standby_msg)
                 RoomControl(2, 'OFF')  # RELAY 3 ON
             elif 'tv' in queryList:
-                speak(standby_msg)
                 RoomControl(3, 'OFF')  # RELAY 5 ON
             elif 'monitor' in queryList:
-                speak(standby_msg)
                 RoomControl(4, 'OFF')  # RELAY 7 ON
             elif 'all' in queryList:
-                speak(standby_msg)
                 RoomControl(1, 'OFF'),RoomControl(2, 'OFF'),RoomControl(3, 'OFF'),RoomControl(4, 'OFF')
 
         else:

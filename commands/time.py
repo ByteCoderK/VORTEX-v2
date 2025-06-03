@@ -1,7 +1,9 @@
 import datetime
-
+import pytz
 def current_time():
-    current_time = datetime.datetime.now()
-    current_time_str = current_time.strftime("%I:%M %p")
-    time = "Current time is: " + current_time_str
-    return time
+    tz = pytz.timezone("Asia/Kolkata")  # Valid timezone from pytz
+    now = datetime.datetime.now(tz)
+    current_time_str = now.strftime("%I:%M %p")
+    return "Current time is: " + current_time_str
+
+print(current_time())

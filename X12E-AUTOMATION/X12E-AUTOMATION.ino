@@ -77,6 +77,7 @@ void reconnect() {
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("SetUp Mode...");
   pinMode(relay1, OUTPUT);
   pinMode(relay2, OUTPUT);
   pinMode(relay3, OUTPUT);

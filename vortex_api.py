@@ -19,5 +19,5 @@ class Query(BaseModel):
 
 @app.post("/ask")
 def ask(payload: Query):
-    response = route_command(payload.query, payload.query.lower().split())
+    response = route_command(payload.query, payload.query.lower())
     return {"response": response}

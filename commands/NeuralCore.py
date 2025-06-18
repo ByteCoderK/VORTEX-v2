@@ -35,7 +35,7 @@ def ask_ai(query,CURRENT_key=keys["KEY_1"],first_call=True) -> str:
             extra_body={}
         )
         response = completion.choices[0].message.content
-        return response + "\t---> Powered By - " + "AI_" + str(model_keys.index(CURRENT_key))
+        return data +  response + "\t---> Powered By - " + "AI_" + str(model_keys.index(CURRENT_key))
     except Exception as e:
         # Fallback logic: try next model
         current_index = model_keys.index(CURRENT_key)

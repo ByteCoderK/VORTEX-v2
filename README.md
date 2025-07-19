@@ -1,4 +1,4 @@
-8# V.O.R.T.E.X. - Hosted @Render==Server
+ V.O.R.T.E.X. - Hosted @Render==Server
 **Voice-Operated Reactive Technology for Extreme eXecution**  
 > _“If JARVIS had a rebellious, overclocked cousin—this would be it.”_
 

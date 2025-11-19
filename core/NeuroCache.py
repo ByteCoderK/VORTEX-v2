@@ -10,10 +10,10 @@ from commands.NeuralCore import*
 
 MemoryCACHE = []
 keys = {
-    'KEY_1': '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',
-    'KEY_2': "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",
-    'KEY_3': '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',
-    'KEY_4': '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'
+    'KEY_1': 'sk-or-v1-4e12e8608cbcc3a4eb873e 6d04fbf8a58d53d873d7a968195b2caae7aa3c25bd',
+    'KEY_2': "sk-or-v1-3df21746fdcbe043d2eefe 54abc3c3cf5afa4568393cb6da7810cfb492d213a1",
+    'KEY_3': 'sk-or-v1-0ad6a492cedc75a7518ccc 86b5d8806b77004765255429a13f13477ea41cc2f0',
+    'KEY_4': 'sk-or-v1-797084af041ee7149e1d64 833163a48ba809826151ce8562db9d027f263f876b'
 }
 def rememberMeProtocol(query,CURRENT_key=keys["KEY_1"]):
     model_keys = list(keys.values())
@@ -23,7 +23,8 @@ def rememberMeProtocol(query,CURRENT_key=keys["KEY_1"]):
 )
     try:
         completion = client.chat.completions.create(
-            model='meta-llama/llama-3.3-8b-instruct:free',
+            model='kwaipilot/
+kat-coder-pro:free',
             messages=[
                 {
                     "role": "system",

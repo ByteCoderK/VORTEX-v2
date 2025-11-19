@@ -23,8 +23,7 @@ def rememberMeProtocol(query,CURRENT_key=keys["KEY_1"]):
 )
     try:
         completion = client.chat.completions.create(
-            model='kwaipilot/
-kat-coder-pro:free',
+            model='kwaipilot/kat-coder-pro:free',
             messages=[
                 {
                     "role": "system",

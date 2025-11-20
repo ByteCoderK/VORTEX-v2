@@ -16,12 +16,13 @@ keys = {
     'KEY_4': 'sk-or-v1-797084af041ee7149e1d64 833163a48ba809826151ce8562db9d027f263f876b'
 }
 def rememberMeProtocol(query,CURRENT_key=keys["KEY_1"]):
+    try:
     model_keys = list(keys.values())
     client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=CURRENT_key
 )
-    try:
+    
         completion = client.chat.completions.create(
             model='kwaipilot/kat-coder-pro:free',
             messages=[

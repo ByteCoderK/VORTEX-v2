@@ -35,7 +35,7 @@ def ask_ai(query, a=None, b=None):
             completion = client.chat.completions.create(
                 model="kwaipilot/kat-coder-pro:free",
                 messages=[
-                    { "role": "system", "content": "You are VORTEX, a helpful voice-controlled assistant." },
+                    { "role": "system", "content": "You are ATLAS, a helpful voice-controlled assistant." },
                     { "role": "user", "content": query }
                 ],
                 extra_headers={

@@ -22,7 +22,7 @@ def create_client(api_key):
         return None
 
 
-def ask_ai(query):
+def ask_ai(query, a=None, b=None):
     if not query:
         query = input("You: ")
 

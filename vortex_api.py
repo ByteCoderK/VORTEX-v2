@@ -21,4 +21,6 @@ class Query(BaseModel):
 @app.post("/ask")
 def ask(payload: Query):
     response = route_command(payload.query, payload.query.lower())
-    return {"ATLAS": data["response"]}
+    RawOutput=response
+    FinalOutput=" ".join(RawOutput)
+    return {"ATLAS": FinalOutput}

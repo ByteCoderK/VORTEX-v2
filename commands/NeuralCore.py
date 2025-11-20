@@ -7,6 +7,7 @@ keys = {
     'KEY_4': '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'
 }
 def ask_ai(query,CURRENT_key=keys["KEY_1"],first_call=True) -> str:
+    try:
     model_keys = list(keys.values())
     client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
@@ -15,7 +16,7 @@ def ask_ai(query,CURRENT_key=keys["KEY_1"],first_call=True) -> str:
       # Replace this with your actual API key
     if first_call and not query:
         query = input("You: ")
-    try:
+    
         completion = client.chat.completions.create(
             model='kwaipilot/kat-coder-pro:free',
             messages=[

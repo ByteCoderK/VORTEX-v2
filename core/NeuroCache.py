@@ -20,17 +20,21 @@ keys = {
 # Create a clean ordered list so Python doesn't screw you
 model_keys = [keys[k] for k in sorted(keys.keys())]
 
+def write_memory(memory_dict):
+    if not memory_dict:
+        return  # nothing to save
+
+    with open("memory.txt", "a", encoding="utf-8") as f:
+        f.write(json.dumps(memory_dict, ensure_ascii=False) + "\n")
+
 
 def rememberMeProtocol(query, CURRENT_key=keys["KEY_1"]):
 
-    # Make sure CURRENT_key is actually in model_keys
-    # (your previous code crashed here randomly)
     if CURRENT_key not in model_keys:
         CURRENT_key = model_keys[0]
 
     for idx, key in enumerate(model_keys):
 
-        # Skip ahead to CURRENT_key position in list
         if key != CURRENT_key:
             continue
 
@@ -46,19 +50,10 @@ def rememberMeProtocol(query, CURRENT_key=keys["KEY_1"]):
                     {
                         "role": "system",
                         "content": (
-                            'Respond ONLY with pure JSON. Example outputs:\n'
-                            '{"user_name": "John"} for names\n'
-                            '{"country": "France"} for locations\n'
-                            '{"preferences": ["pizza"]} for likes\n'
-                            '{"reminders": ["Call mom"]} for tasks\n'
-                            '{"friends_name": ["sonu","arun"]} for names\n'
-                            '{} for no data, SPECIAL NOTE: NO OTHER RESPONSE NEEDED!!'
+                            'Respond ONLY in JSON. If nothing to store, return {}.'
                         )
                     },
-                    {
-                        "role": "user",
-                        "content": query
-                    }
+                    {"role": "user", "content": query}
                 ],
                 extra_headers={
                     "X-Title": "VORTEX",
@@ -68,19 +63,18 @@ def rememberMeProtocol(query, CURRENT_key=keys["KEY_1"]):
 
             response_text = completion.choices[0].message.content
 
-            # Safe JSON parsing
+            # Attempt JSON parsing
             try:
-                json.loads(response_text)
+                memory_json = json.loads(response_text)
             except:
-                return "MEMORY EXTRACTED (INVALID JSON RETURNED): " + response_text
+                memory_json = {}
 
-            return "MEMORY EXTRACTED " + response_text
+            return memory_json
 
         except Exception as e:
-            # Try next key instead of recursion hell
             next_index = idx + 1
             if next_index < len(model_keys):
                 CURRENT_key = model_keys[next_index]
-                continue  # retry loop with next key
+                continue
             else:
-                return "All models failed..."
+                return {}

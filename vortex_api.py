@@ -22,5 +22,7 @@ class Query(BaseModel):
 def ask(payload: Query):
     response = route_command(payload.query, payload.query.lower())
     RawOutput=response
-    FinalOutput=" ".join(RawOutput)
+    FinalOutput = " ".join(
+    [str(item) for item in RawOutput if item is not None]
+)
     return {"ATLAS": FinalOutput}

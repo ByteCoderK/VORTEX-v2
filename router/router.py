@@ -45,6 +45,8 @@ except ImportError as e:
     logging.error(f"Core import failed: {str(e)}")
     raise
 
+memory_data = rememberMeProtocol(query)
+
 def route_command(query: str, queryList: list[str]):
     logging.info(f"Processing query: '{query}' with tokens: {queryList}")
     query = query.lower()
@@ -105,7 +107,7 @@ def route_command(query: str, queryList: list[str]):
                 ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
                 
                 logging.debug("Submitting memory task")
-                memory_future = executor.submit(rememberMeProtocol, query, keys["KEY_1"])
+                memory_future = executor.submit(write_memory,memory_data)
                 
                 try:
                     # Get results with timeout

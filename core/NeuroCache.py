@@ -20,12 +20,10 @@ keys = {
 # Create a clean ordered list so Python doesn't screw you
 model_keys = [keys[k] for k in sorted(keys.keys())]
 
-def write_memory(memory_dict):
-    if not memory_dict:
-        return  # nothing to save
-
+def write_memory(memory_list):
     with open("memory.txt", "a", encoding="utf-8") as f:
-        f.write(json.dumps(memory_dict, ensure_ascii=False) + "\n")
+        safe_list = [str(item) for item in memory_list if item is not None]
+        f.write("\n".join(safe_list) + "\n")
 
 
 def rememberMeProtocol(query, CURRENT_key=keys["KEY_1"]):

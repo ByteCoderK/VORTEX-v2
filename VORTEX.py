@@ -1,6 +1,5 @@
 import requests
 
-api_res = data["response"]
 
 def logic():
     while True:
@@ -11,7 +10,8 @@ def logic():
         #print("DEBUG:", data)  # Add this line to see raw response
         
         if "response" in data:
-            print("VORTEX:", api_res)
+            api_res = "VORTEX:", data["response"]
+            print(api_res)
         else:
             print("VORTEX: Error",data.get("details","Unknown error"))        
 

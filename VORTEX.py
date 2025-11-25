@@ -11,7 +11,7 @@ def logic():
         
         if "response" in data:
             api_res = "VORTEX:", data["response"]
-            print(api_res)
+            return {"response": data["response"]}
         else:
             print("VORTEX: Error",data.get("details","Unknown error"))        
 

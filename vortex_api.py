@@ -22,5 +22,21 @@ class Query(BaseModel):
 def ask(payload: Query):
     response = route_command(payload.query, payload.query.lower())
     RawOutput=response
-    FinalOutput = " ".join(str(item) for item in (RawOutput or []) if item is not None)
+    # Handle None safely and log a simple warning
+    if RawOutput is None:
+        logger.warning("route_command returned None for query=%s", payload.query)
+        FinalOutput = ""
+        return {"ATLAS": FinalOutput}
+
+    if isinstance(RawOutput, str):
+        return {"ATLAS": RawOutput}
+
+# Otherwise try to iterate; if not iterable, convert to str
+    try:
+        items = list(RawOutput)
+    except TypeError:
+        FinalOutput = str(RawOutput)
+    else:
+        FinalOutput = " ".join(str(item) for item in items if item is not None)
+
     return {"ATLAS": FinalOutput}

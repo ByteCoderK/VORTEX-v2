@@ -53,7 +53,6 @@ def RoomControl(relay_number: int, state: str):
         status = result[0]
         if status == 0:
             print(f"📤 Sent command '{command}' for Relay {relay_number} ({state})")
-            return 0
         else:
             print(f"\u274C Failed to send command to Relay {relay_number}")
     else:

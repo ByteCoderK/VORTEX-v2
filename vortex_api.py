@@ -25,6 +25,7 @@ def ask(payload: Query):
     # Handle None safely and log a simple warning
     if RawOutput is None:
         q=payload.query
+        print(RawOutput)
         print (f"route_command returned None for query={q}")
         FinalOutput = ""
         return {"ATLAS": FinalOutput}

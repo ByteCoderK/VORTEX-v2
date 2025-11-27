@@ -77,7 +77,8 @@ def route_command(query: str, queryList: list[str]):
         elif "turn" and "on" in queryList:
             if 'light' in queryList:
                 RoomControl(1, 'ON')  # RELAY 1 ON 
-                result = "Light is now on"
+                
+                return "Light is now on", None 
             elif 'fan' in queryList:
                 RoomControl(2, 'ON')  # RELAY 3 ON
             elif 'tv' in queryList:

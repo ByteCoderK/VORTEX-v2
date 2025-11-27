@@ -79,27 +79,35 @@ def route_command(query: str, queryList: list[str]):
                 RoomControl(1, 'ON')  # RELAY 1 ON 
                 
                 return "Light is now on", None 
-            elif 'fan' in queryList:
+            elif 'wind' in queryList:
                 RoomControl(2, 'ON')  # RELAY 3 ON
-            elif 'tv' in queryList:
+                "Wind is now on", None
+            elif 'ambient' in queryList:
                 RoomControl(3, 'ON')  # RELAY 5 ON
-            elif 'monitor' in queryList:
+                return "Ambient Light is now on", None
+            elif 'socket' in queryList:
                 RoomControl(4, 'ON')  # RELAY 7 ON
+                return "Socket is now on", None
             elif 'all' in queryList:
                 RoomControl(1, 'ON'),RoomControl(2, 'ON'),RoomControl(3, 'ON'),RoomControl(4, 'ON')
+                return "All Devices is now on", None
     # Check if the first word is "off" or "turn off"
-        elif queryList[0] == "off" or (queryList[0] == "turn" and queryList[1] == "off"):
+        elif "turn" and "off" in queryList:
             if 'light' in queryList:
                 RoomControl(1, 'OFF')  # RELAY 1 ON 
                 return "Light is now off", None 
             elif 'fan' in queryList:
                 RoomControl(2, 'OFF')  # RELAY 3 ON
-            elif 'tv' in queryList:
+                return "Wind is now off", None
+            elif 'ambient' in queryList:
                 RoomControl(3, 'OFF')  # RELAY 5 ON
-            elif 'monitor' in queryList:
+                return "Ambient Light is now off", None
+            elif 'socket' in queryList:
                 RoomControl(4, 'OFF')  # RELAY 7 ON
+                return "Socket is now off", None
             elif 'all' in queryList:
                 RoomControl(1, 'OFF'),RoomControl(2, 'OFF'),RoomControl(3, 'OFF'),RoomControl(4, 'OFF')
+                return "All Devices is now off", None
 
         else:
             logging.info("Executing AI and memory protocols")

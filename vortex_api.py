@@ -23,5 +23,4 @@ def ask(payload: Query):
     response = route_command(payload.query, payload.query.lower())
     RawOutput=response
     FinalOutput = " ".join(str(item) for item in (RawOutput or []) if item is not None)
-)
     return {"ATLAS": FinalOutput}

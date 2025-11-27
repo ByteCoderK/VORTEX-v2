@@ -23,6 +23,9 @@ def ask(payload: Query):
     response = route_command(payload.query, payload.query.lower())
     RawOutput=response
     FinalOutput = " ".join(
-    [str(item) for item in RawOutput if item is not None]
+    try:
+        [str(item) for item in RawOutput if item is not None]
+    except Exception as E:
+        print(f'ERROR <<< ',E)
 )
     return {"ATLAS": FinalOutput}

@@ -74,7 +74,7 @@ def route_command(query: str, queryList: list[str]):
             logging.debug(f"Weather result: {result}")
             return result, None
         
-        elif queryList[0] == "turn" and queryList[1] == "on":
+        elif "turn" and "on" in queryList:
             if 'light' in queryList:
                 RoomControl(1, 'ON')  # RELAY 1 ON 
             elif 'fan' in queryList:

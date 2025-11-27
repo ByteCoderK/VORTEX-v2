@@ -79,10 +79,10 @@ def route_command(query: str, queryList: list[str]):
                 RoomControl(1, 'ON')  # RELAY 1 ON 
                 
                 return "Light is now on", None 
-            elif 'wind' or 'fan' in queryList:
+            elif 'wind' in queryList:
                 RoomControl(2, 'ON')  # RELAY 3 ON
                 return "Wind is now on", None
-            elif 'ambient' and 'light' in queryList:
+            elif 'ambient' in queryList:
                 RoomControl(3, 'ON')  # RELAY 5 ON
                 return "Ambient Light is now on", None
             elif 'socket' in queryList:
@@ -96,10 +96,10 @@ def route_command(query: str, queryList: list[str]):
             if 'light' in queryList:
                 RoomControl(1, 'OFF')  # RELAY 1 ON 
                 return "Light is now off", None 
-            elif 'wind' or 'fan' in queryList:
+            elif 'wind' in queryList:
                 RoomControl(2, 'OFF')  # RELAY 3 ON
                 return "Wind is now off", None
-            elif 'ambient'and 'light' in queryList:
+            elif 'ambient' in queryList:
                 RoomControl(3, 'OFF')  # RELAY 5 ON
                 return "Ambient Light is now off", None
             elif 'socket' in queryList:

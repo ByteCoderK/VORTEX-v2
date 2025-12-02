@@ -40,7 +40,7 @@ class ESPController:
         print(f"📨 ESP Feedback → {msg.topic}: {msg.payload.decode()}")
 
     # ---------- Public Method ----------
-    def control_relay(self, relay: int, state: str):
+    def RoomControl(self, relay: int, state: str):
         """
         relay: 1–4
         state: "ON" or "OFF"

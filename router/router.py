@@ -35,7 +35,7 @@ except ImportError as e:
 
 # commands
 try:
-    from commands.XAUTOMATION import *
+    from commands.XAUTOMATION import RoomControl
     from commands.greet import greet
     from commands.date import date
     from commands.time import current_time

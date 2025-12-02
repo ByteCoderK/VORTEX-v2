@@ -1,60 +1,65 @@
 import paho.mqtt.client as mqtt
 import time
 
-# HiveMQ credentials and broker
-broker = "c4f73c571367445282f1ae6cd0e5e0ce.s1.eu.hivemq.cloud"
-port = 8883
-username = "VORTEX"
-password = "ffc-5DF0FSD9AS8-e./';..ls./'lp./';..l-iucfbYwaSDewiaubv-lliot"
+class ESPController:
+    def __init__(self,
+                 broker: str,
+                 port: int,
+                 username: str,
+                 password: str,
+                 topic_cmd: str,
+                 topic_feedback: str):
 
-topic_sub = "vortex/feedback"
+        self.broker = broker
+        self.port = port
+        self.topic_cmd = topic_cmd
+        self.topic_feedback = topic_feedback
 
-# Callbacks
-def on_connect(client, userdata, flags, rc):
-    if rc == 0:
-        print("\u2705 Connected to HiveMQ Cloud")
-        client.subscribe(topic_sub)
-    else:
-        print(f"\u274C Failed to connect, return code {rc}")
+        self.client = mqtt.Client()
+        self.client.username_pw_set(username, password)
+        self.client.tls_set()
 
-def on_message(client, userdata, msg):
-    print(f"📨 Message from {msg.topic}: {msg.payload.decode()}")
+        # Bind callbacks
+        self.client.on_connect = self._on_connect
+        self.client.on_message = self._on_message
 
-# MQTT client setup
-client = mqtt.Client()
-client.username_pw_set(username, password)
-client.tls_set()
-client.on_connect = on_connect
-client.on_message = on_message
-client.connect(broker, port)
-client.loop_start()
-time.sleep(2)
+        # Connect
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
+        time.sleep(1)
 
-# Relay control command sender
-def RoomControl(relay_number: int, state: str):
-    """
-    relay_number: 1 to 4
-    state: "ON" or "OFF"
-    """
-    command_map = {
-        (1, "ON"): "1",
-        (1, "OFF"): "2",
-        (2, "ON"): "3",
-        (2, "OFF"): "4",
-        (3, "ON"): "5",
-        (3, "OFF"): "6",
-        (4, "ON"): "7",
-        (4, "OFF"): "8",
-    }
-
-    command = command_map.get((relay_number, state.upper()))
-    if command:
-        result = client.publish("vortex/relay1", command)
-        status = result[0]
-        if status == 0:
-            print(f"📤 Sent command '{command}' for Relay {relay_number} ({state})")
+    # ---------- Callbacks ----------
+    def _on_connect(self, client, userdata, flags, rc):
+        if rc == 0:
+            print("✔ Connected to HiveMQ Cloud")
+            client.subscribe(self.topic_feedback)
         else:
-            print(f"\u274C Failed to send command to Relay {relay_number}")
-    else:
-        print("\u274C Invalid relay number or state")
+            print(f"❌ Failed to connect, rc={rc}")
 
+    def _on_message(self, client, userdata, msg):
+        print(f"📨 ESP Feedback → {msg.topic}: {msg.payload.decode()}")
+
+    # ---------- Public Method ----------
+    def control_relay(self, relay: int, state: str):
+        """
+        relay: 1–4
+        state: "ON" or "OFF"
+        """
+        command_map = {
+            (1, "ON"): "1", (1, "OFF"): "2",
+            (2, "ON"): "3", (2, "OFF"): "4",
+            (3, "ON"): "5", (3, "OFF"): "6",
+            (4, "ON"): "7", (4, "OFF"): "8",
+        }
+
+        cmd = command_map.get((relay, state.upper()))
+        if not cmd:
+            print("❌ Invalid relay/state")
+            return
+
+        result = self.client.publish(self.topic_cmd, cmd)
+
+        if result[0] == 0:
+            print(f"📤 Sent → Relay {relay} {state} (cmd={cmd})")
+        else:
+            print("❌ Failed to publish command")

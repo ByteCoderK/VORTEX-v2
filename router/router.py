@@ -2,8 +2,6 @@ import os
 import sys
 import logging
 import random
-from routine_parser import parse_routine
-from routine_db import add_routine
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 #
 
@@ -23,6 +21,17 @@ logging.basicConfig(
 project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
 logging.debug(f"Project root set to: {project_root}")
+
+
+
+# commands
+try:
+    from routines.routine_parser import *
+    from routines.routine_db import *
+    logging.debug("routine import successful")
+except ImportError as e:
+    logging.error(f"routine import failed: {str(e)}")
+    raise
 
 # commands
 try:

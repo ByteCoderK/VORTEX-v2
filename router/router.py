@@ -2,6 +2,8 @@ import os
 import sys
 import logging
 import random
+from routine_parser import parse_routine
+from routine_db import add_routine
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 #
 
@@ -47,9 +49,11 @@ except ImportError as e:
 
 memory_data = rememberMeProtocol(query)
 
+
 def route_command(query: str, queryList: list[str]):
     logging.info(f"Processing query: '{query}' with tokens: {queryList}")
     query = query.lower()
+    routine = parse_routine(query)
 
     try:
         if "time" in queryList:
@@ -112,12 +116,17 @@ def route_command(query: str, queryList: list[str]):
         else:
             logging.info("Executing AI and memory protocols")
             
-            with ThreadPoolExecutor(max_workers=2) as executor:
+            with ThreadPoolExecutor(max_workers=3) as executor:
                 # Log before submission
                 logging.debug("Submitting AI task")
                 ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
                 
                 logging.debug("Submitting memory task")
+                
+                routine_identifier = executor.submit(add_routine,routine)
+                
+                logging.debug("Submitting query for routine extraction.....")
+               
                 memory_future = executor.submit(write_memory,memory_data)
                 
                 try:
@@ -125,18 +134,24 @@ def route_command(query: str, queryList: list[str]):
                     ai_result = ai_future.result(timeout=10)
                     logging.debug(f"AI returned: {ai_result}")
                     
+                    routine_result = routine_identifier.result(timeout=10)
+                    logging.debug(f"routine_result returned: {routine_result}")
+                    
+                    
                     memory_result = memory_future.result(timeout=10)
                     logging.debug(f"Memory returned: {memory_result}")
                     
-                    return ai_result, memory_result
+                    return ai_result, memory_result,routine_result
+                    
                     
                 except TimeoutError:
                     logging.error("Thread execution timed out!")
-                    return "AI timeout", "Memory timeout"
+                    return "AI timeout", "Memory timeout","routine_result timeout"
+                    
                     
                 except Exception as e:
                     logging.error(f"Thread execution failed: {str(e)}")
-                    return f"AI error: {str(e)}", f"Memory error: {str(e)}"
+                    return f"AI error: {str(e)}", f"Memory error: {str(e)}",f"routine_result: {str(e)}"
                     
     except Exception as e:
         logging.critical(f"Unexpected error in route_command: {str(e)}")

@@ -11,72 +11,98 @@ DEVICE_MAP = {
 }
 
 def parse_routine(text: str) -> dict:
-    # ======== PARSE TIME =========
-    time_match = re.search(r'(\d{1,2})(?::(\d{2}))?\s*(am|pm)?', text, re.IGNORECASE)
-    if time_match:
-        hour = int(time_match.group(1))
-        minute = int(time_match.group(2)) if time_match.group(2) else 0
-        meridian = time_match.group(3)
+    lower = text.lower()
 
-        if meridian:
-            if meridian.lower() == 'pm' and hour != 12:
-                hour += 12
-            if meridian.lower() == 'am' and hour == 12:
-                hour = 0
+    # ==========================
+    #  SMART TIME PARSING
+    # ==========================
+    time_str = None
+
+    # Priority 1: HH:MM AM/PM
+    m = re.search(r'\b(\d{1,2}):(\d{2})\s*(am|pm)\b', lower)
+    if m:
+        hour = int(m.group(1))
+        minute = int(m.group(2))
+        mer = m.group(3)
+
+        if mer == "pm" and hour != 12:
+            hour += 12
+        if mer == "am" and hour == 12:
+            hour = 0
 
         time_str = f"{hour:02d}:{minute:02d}"
-    else:
-        time_str = None
 
-    # ======== PARSE FREQUENCY =========
-    lower = text.lower()
+    # Priority 2: HH AM/PM
+    if not time_str:
+        m = re.search(r'\b(\d{1,2})\s*(am|pm)\b', lower)
+        if m:
+            hour = int(m.group(1))
+            mer = m.group(2)
+
+            if mer == "pm" and hour != 12:
+                hour += 12
+            if mer == "am" and hour == 12:
+                hour = 0
+
+            time_str = f"{hour:02d}:00"
+
+    # Priority 3: HH:MM 24-hour
+    if not time_str:
+        m = re.search(r'\b(\d{1,2}):(\d{2})\b', lower)
+        if m:
+            hour = int(m.group(1))
+            minute = int(m.group(2))
+            if 0 <= hour <= 23:
+                time_str = f"{hour:02d}:{minute:02d}"
+
+    # Priority 4: Single hour
+    if not time_str:
+        m = re.search(r'\b(\d{1,2})\b', lower)
+        if m:
+            hour = int(m.group(1))
+            if 0 <= hour <= 23:
+                time_str = f"{hour:02d}:00"
+
+    # ==========================
+    #  SMART FREQUENCY PARSING
+    # ==========================
+    weekdays = [
+        "monday","tuesday","wednesday",
+        "thursday","friday","saturday","sunday"
+    ]
+    freq = "once"
+    for day in weekdays:
+        if day in lower:
+            freq = day
+            break
     if "every day" in lower:
         freq = "daily"
-    elif "every monday" in lower:
-        freq = "monday"
-    elif "every tuesday" in lower:
-        freq = "tuesday"
-    elif "every wednesday" in lower:
-        freq = "wednesday"
-    elif "every thursday" in lower:
-        freq = "thursday"
-    elif "every friday" in lower:
-        freq = "friday"
-    elif "every saturday" in lower:
-        freq = "saturday"
-    elif "every sunday" in lower:
-        freq = "sunday"
-    else:
-        freq = "once"
 
-    # ======== PARSE ACTION =========
-    # ON/OFF
+    # ==========================
+    #  SMART ACTION PARSING
+    # ==========================
+    state = None
     if "turn on" in lower:
         state = "ON"
-        device_name = lower.split("turn on")[-1].strip()
+        device_part = lower.split("turn on")[-1]
     elif "turn off" in lower:
         state = "OFF"
-        device_name = lower.split("turn off")[-1].strip()
+        device_part = lower.split("turn off")[-1]
     else:
-        state = None
-        device_name = None
+        device_part = ""
 
-    # Map device to relay num
     relay = None
-    if device_name:
-        for key in DEVICE_MAP:
-            if key in device_name:
-                relay = DEVICE_MAP[key]
-                break
+    for name, num in DEVICE_MAP.items():
+        if name in device_part:
+            relay = num
+            break
 
-    # ======== FINAL ACTION STRUCTURE (MATCHES EXECUTOR) ========
     action = {
         "type": "device",
         "relay": relay,
         "state": state
     }
 
-    # ======== BUILD ROUTINE DICT =========
     routine_data = {
         "trigger": {
             "type": "time",
@@ -86,12 +112,16 @@ def parse_routine(text: str) -> dict:
         "action": action
     }
 
-    # ======== SAVE TO JSON =========
+    # ==========================
+    #  SAVE TO JSON
+    # ==========================
     try:
         with open(ROUTINE_FILE, "r") as f:
             existing = json.load(f)
+            if not isinstance(existing, list):
+                existing = []
     except:
-        existing = []  # File exists but empty or corrupt
+        existing = []
 
     existing.append(routine_data)
 

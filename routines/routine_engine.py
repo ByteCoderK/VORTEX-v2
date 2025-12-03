@@ -1,65 +1,63 @@
-#routine_engine.py
-
+# routines/routine_engine.py
 import os
 import sys
 import schedule
 import time
+import logging
 from datetime import datetime
-project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
-sys.path.append(project_root)
+MODULE_DIR = os.path.dirname(__file__)
+sys.path.append(MODULE_DIR)
 
-# routine imports
-from routines.routine_db import *
-from routines.routine_executor import *
+from routines.routine_db import load_routines
+from routines.routine_executor import execute_action
+
+logger = logging.getLogger("routine_engine")
 
 def register_routine(routine):
-
     t = routine["trigger"]
     action = routine["action"]
+    value = t.get("value")
 
-    # Daily routines
-    if t["frequency"] == "daily":
-        schedule.every().day.at(t["value"]).do(execute_action, action)
+    # guard invalid times
+    if not value:
+        logger.warning("Skipping routine with no time value: %s", routine)
+        return
 
-    # Weekly routines
-    elif t["frequency"] == "monday":
-        schedule.every().monday.at(t["value"]).do(execute_action, action)
+    freq = t.get("frequency", "once")
+    logger.info("Registering routine: freq=%s time=%s action=%s", freq, value, action)
 
-    elif t["frequency"] == "tuesday":
-        schedule.every().tuesday.at(t["value"]).do(execute_action, action)
-
-    # Add more days if needed
-    elif t["frequency"] == "wednesday":
-        schedule.every().wednesday.at(t["value"]).do(execute_action, action)
-
-    elif t["frequency"] == "thursday":
-        schedule.every().thursday.at(t["value"]).do(execute_action, action)
-
-    elif t["frequency"] == "friday":
-        schedule.every().friday.at(t["value"]).do(execute_action, action)
-
-    elif t["frequency"] == "saturday":
-        schedule.every().saturday.at(t["value"]).do(execute_action, action)
-
-    elif t["frequency"] == "sunday":
-        schedule.every().sunday.at(t["value"]).do(execute_action, action)
-
+    if freq == "daily":
+        schedule.every().day.at(value).do(wrap_execute, action)
+    elif freq == "monday":
+        schedule.every().monday.at(value).do(wrap_execute, action)
+    elif freq == "tuesday":
+        schedule.every().tuesday.at(value).do(wrap_execute, action)
+    elif freq == "wednesday":
+        schedule.every().wednesday.at(value).do(wrap_execute, action)
+    elif freq == "thursday":
+        schedule.every().thursday.at(value).do(wrap_execute, action)
+    elif freq == "friday":
+        schedule.every().friday.at(value).do(wrap_execute, action)
+    elif freq == "saturday":
+        schedule.every().saturday.at(value).do(wrap_execute, action)
+    elif freq == "sunday":
+        schedule.every().sunday.at(value).do(wrap_execute, action)
     else:
-        # One-time routine
-        schedule.every().day.at(t["value"]).do(execute_once, action)
+        schedule.every().day.at(value).do(wrap_execute, action)
 
-def execute_once(action):
-    execute_action(action)
-    # TODO: remove routine from DB after execution
+def wrap_execute(action):
+    logger.info("Executing routine action now: %s", action)
+    try:
+        execute_action(action)
+    except Exception as e:
+        logger.exception("Error executing action: %s", e)
 
 def start_engine():
     routines = load_routines()
-
+    logger.info("Routine engine loading %d routines", len(routines))
     for r in routines:
         register_routine(r)
-
-    print("[ROUTINE] Engine started.")
-
+    logger.info("[ROUTINE] Engine started. Waiting for schedule...")
     while True:
         schedule.run_pending()
         time.sleep(1)

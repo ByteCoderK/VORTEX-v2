@@ -48,7 +48,7 @@ def ask_ai(query, a=None, b=None):
             )
 
             response = completion.choices[0].message.content
-            return f"{response}\t---> Powered By - AI_{i}"
+            return f"{response}"
 
         except Exception as e:
             print(f"Key {i} failed:", e)

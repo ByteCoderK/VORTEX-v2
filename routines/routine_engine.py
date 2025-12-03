@@ -7,8 +7,8 @@ project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
 
 # routine imports
-from routine_db import load_routines
-from routine_executor import execute_action
+from routines.routine_db import *
+from routines.routine_executor import *
 
 def register_routine(routine):
 

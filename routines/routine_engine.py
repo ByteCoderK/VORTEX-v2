@@ -1,6 +1,11 @@
 import schedule
 import time
 from datetime import datetime
+project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
+sys.path.append(project_root)
+logging.debug(f"Project root set to: {project_root}")
+
+# routine imports
 from routine_db import load_routines
 from routine_executor import execute_action
 

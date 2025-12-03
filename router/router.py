@@ -3,6 +3,7 @@ import sys
 import logging
 import random
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
+import threading 
 
 standby_word = ["standby", "preparing", "engaging", "processing", "charging",
                 "optimizing", "booting up", "syncing", "initializing",
@@ -23,6 +24,7 @@ logging.debug(f"Project root set to: {project_root}")
 
 # routine imports
 try:
+    from routines.routine_engine import *
     from routines.routine_parser import *
     from routines.routine_db import *
     logging.debug("routine import successful")
@@ -70,6 +72,7 @@ esp = ESPController(
     topic_feedback="vortex/feedback"
 )
 
+threading.Thread(target=start_engine, daemon=True).start()
 
 def route_command(query: str, queryList: list[str]):
     logging.info(f"Processing query: '{query}' with tokens: {queryList}")

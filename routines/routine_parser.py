@@ -1,7 +1,10 @@
+# routines/routine_parser.py
 import re
 import json
+import os
 
-ROUTINE_FILE = "data/routines.json"
+MODULE_DIR = os.path.dirname(__file__)
+ROUTINE_FILE = os.path.join(MODULE_DIR, "data", "routines.json")
 
 DEVICE_MAP = {
     "light": 1,
@@ -12,90 +15,55 @@ DEVICE_MAP = {
 
 def parse_routine(text: str) -> dict:
     lower = text.lower()
-
-    # ==========================
-    #  SMART TIME PARSING
-    # ==========================
+    # --- time parsing (your smarter version) ---
     time_str = None
-
-    # Priority 1: HH:MM AM/PM
     m = re.search(r'\b(\d{1,2}):(\d{2})\s*(am|pm)\b', lower)
     if m:
-        hour = int(m.group(1))
-        minute = int(m.group(2))
-        mer = m.group(3)
-
-        if mer == "pm" and hour != 12:
-            hour += 12
-        if mer == "am" and hour == 12:
-            hour = 0
-
+        hour = int(m.group(1)); minute = int(m.group(2)); mer = m.group(3)
+        if mer == "pm" and hour != 12: hour += 12
+        if mer == "am" and hour == 12: hour = 0
         time_str = f"{hour:02d}:{minute:02d}"
-
-    # Priority 2: HH AM/PM
     if not time_str:
         m = re.search(r'\b(\d{1,2})\s*(am|pm)\b', lower)
         if m:
-            hour = int(m.group(1))
-            mer = m.group(2)
-
-            if mer == "pm" and hour != 12:
-                hour += 12
-            if mer == "am" and hour == 12:
-                hour = 0
-
+            hour = int(m.group(1)); mer = m.group(2)
+            if mer == "pm" and hour != 12: hour += 12
+            if mer == "am" and hour == 12: hour = 0
             time_str = f"{hour:02d}:00"
-
-    # Priority 3: HH:MM 24-hour
     if not time_str:
-        m = re.search(r'\b(\d{1,2}):(\d{2})\b', lower)
+        m = re.search(r'\b([01]?\d|2[0-3]):([0-5]\d)\b', lower)
         if m:
-            hour = int(m.group(1))
-            minute = int(m.group(2))
-            if 0 <= hour <= 23:
-                time_str = f"{hour:02d}:{minute:02d}"
+            hour = int(m.group(1)); minute = int(m.group(2))
+            time_str = f"{hour:02d}:{minute:02d}"
 
-    # Priority 4: Single hour
-    if not time_str:
-        m = re.search(r'\b(\d{1,2})\b', lower)
-        if m:
-            hour = int(m.group(1))
-            if 0 <= hour <= 23:
-                time_str = f"{hour:02d}:00"
+    # frequency
+    if "every day" in lower: freq = "daily"
+    elif "every monday" in lower: freq = "monday"
+    elif "every tuesday" in lower: freq = "tuesday"
+    elif "every wednesday" in lower: freq = "wednesday"
+    elif "every thursday" in lower: freq = "thursday"
+    elif "every friday" in lower: freq = "friday"
+    elif "every saturday" in lower: freq = "saturday"
+    elif "every sunday" in lower: freq = "sunday"
+    else: freq = "once"
 
-    # ==========================
-    #  SMART FREQUENCY PARSING
-    # ==========================
-    weekdays = [
-        "monday","tuesday","wednesday",
-        "thursday","friday","saturday","sunday"
-    ]
-    freq = "once"
-    for day in weekdays:
-        if day in lower:
-            freq = day
-            break
-    if "every day" in lower:
-        freq = "daily"
-
-    # ==========================
-    #  SMART ACTION PARSING
-    # ==========================
-    state = None
+    # action
     if "turn on" in lower:
         state = "ON"
-        device_part = lower.split("turn on")[-1]
+        device_name = lower.split("turn on")[-1].strip()
     elif "turn off" in lower:
         state = "OFF"
-        device_part = lower.split("turn off")[-1]
+        device_name = lower.split("turn off")[-1].strip()
     else:
-        device_part = ""
+        state = None
+        device_name = None
 
     relay = None
-    for name, num in DEVICE_MAP.items():
-        if name in device_part:
-            relay = num
-            break
+    if device_name:
+        for key in DEVICE_MAP:
+            if key in device_name:
+                relay = DEVICE_MAP[key]
+                break
 
     action = {
         "type": "device",
@@ -104,27 +72,22 @@ def parse_routine(text: str) -> dict:
     }
 
     routine_data = {
-        "trigger": {
-            "type": "time",
-            "value": time_str,
-            "frequency": freq
-        },
+        "trigger": {"type": "time", "value": time_str, "frequency": freq},
         "action": action
     }
 
-    # ==========================
-    #  SAVE TO JSON
-    # ==========================
+    # ======== SAVE TO JSON (same place as routine_db) =========
     try:
-        with open(ROUTINE_FILE, "r") as f:
-            existing = json.load(f)
-            if not isinstance(existing, list):
-                existing = []
-    except:
+        # load existing safely
+        if os.path.exists(ROUTINE_FILE):
+            with open(ROUTINE_FILE, "r") as f:
+                existing = json.load(f) or []
+        else:
+            existing = []
+    except Exception:
         existing = []
 
     existing.append(routine_data)
-
     with open(ROUTINE_FILE, "w") as f:
         json.dump(existing, f, indent=4)
 

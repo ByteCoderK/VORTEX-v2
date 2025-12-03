@@ -1,12 +1,17 @@
-#routine_parser.py
-
 import re
 import json
 
 ROUTINE_FILE = "data/routines.json"
 
+DEVICE_MAP = {
+    "light": 1,
+    "wind": 2,
+    "ambient": 3,
+    "socket": 4
+}
+
 def parse_routine(text: str) -> dict:
-    # ======== PARSING =========
+    # ======== PARSE TIME =========
     time_match = re.search(r'(\d{1,2})(?::(\d{2}))?\s*(am|pm)?', text, re.IGNORECASE)
     if time_match:
         hour = int(time_match.group(1))
@@ -23,43 +28,70 @@ def parse_routine(text: str) -> dict:
     else:
         time_str = None
 
-    if "every day" in text.lower():
+    # ======== PARSE FREQUENCY =========
+    lower = text.lower()
+    if "every day" in lower:
         freq = "daily"
-    elif "every monday" in text.lower():
+    elif "every monday" in lower:
         freq = "monday"
-    elif "every tuesday" in text.lower():
+    elif "every tuesday" in lower:
         freq = "tuesday"
+    elif "every wednesday" in lower:
+        freq = "wednesday"
+    elif "every thursday" in lower:
+        freq = "thursday"
+    elif "every friday" in lower:
+        freq = "friday"
+    elif "every saturday" in lower:
+        freq = "saturday"
+    elif "every sunday" in lower:
+        freq = "sunday"
     else:
         freq = "once"
 
-    if "turn on" in text.lower():
-        command = "turn_on"
-        device = text.lower().split("turn on")[-1].strip()
-    elif "turn off" in text.lower():
-        command = "turn_off"
-        device = text.lower().split("turn off")[-1].strip()
+    # ======== PARSE ACTION =========
+    # ON/OFF
+    if "turn on" in lower:
+        state = "ON"
+        device_name = lower.split("turn on")[-1].strip()
+    elif "turn off" in lower:
+        state = "OFF"
+        device_name = lower.split("turn off")[-1].strip()
     else:
-        command = "unknown"
-        device = "unknown"
+        state = None
+        device_name = None
 
+    # Map device to relay num
+    relay = None
+    if device_name:
+        for key in DEVICE_MAP:
+            if key in device_name:
+                relay = DEVICE_MAP[key]
+                break
+
+    # ======== FINAL ACTION STRUCTURE (MATCHES EXECUTOR) ========
+    action = {
+        "type": "device",
+        "relay": relay,
+        "state": state
+    }
+
+    # ======== BUILD ROUTINE DICT =========
     routine_data = {
         "trigger": {
             "type": "time",
             "value": time_str,
             "frequency": freq
         },
-        "action": {
-            "device": device,
-            "command": command
-        }
+        "action": action
     }
 
-    # ======== APPEND TO JSON =========
+    # ======== SAVE TO JSON =========
     try:
         with open(ROUTINE_FILE, "r") as f:
             existing = json.load(f)
     except:
-        existing = []  # if file empty/corrupt we create list but DO NOT create file here
+        existing = []  # File exists but empty or corrupt
 
     existing.append(routine_data)
 

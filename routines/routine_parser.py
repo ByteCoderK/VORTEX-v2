@@ -93,5 +93,4 @@ def parse_routine(text: str) -> dict:
     with open(ROUTINE_FILE, "w") as f:
         json.dump(existing, f, indent=4)
 
-    reload_routines()
     return routine_data

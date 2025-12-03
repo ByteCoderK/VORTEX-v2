@@ -12,7 +12,7 @@ standby_word = ["standby", "preparing", "engaging", "processing", "charging",
 standby_msg = "Alright Master, " + random.choice(standby_word) + "..."
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.WARNING,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[logging.FileHandler('vortex_debug.log'),
               logging.StreamHandler()]

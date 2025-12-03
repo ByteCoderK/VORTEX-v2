@@ -100,7 +100,7 @@ def route_command(query: str, queryList: list[str]):
         # ------------------- ROOM CONTROLS ----------------------
 
         # TURN ON
-        if "turn" in queryList or "on" in queryList:
+        if "turno" in queryList or "on" in queryList:
 
             if "light" in queryList:
                 esp.RoomControl(1, "ON")
@@ -124,7 +124,7 @@ def route_command(query: str, queryList: list[str]):
                 return "All Devices are now on", None
 
         # TURN OFF
-        if "turn" in queryList or "off" in queryList:
+        if "turno" in queryList or "off" in queryList:
 
             if "light" in queryList:
                 esp.RoomControl(1, "OFF")

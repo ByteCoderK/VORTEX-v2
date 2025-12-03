@@ -71,12 +71,9 @@ esp = ESPController(
 )
 
 
-memory_data = rememberMeProtocol(query)
-
-
 def route_command(query: str, queryList: list[str]):
     logging.info(f"Processing query: '{query}' with tokens: {queryList}")
-
+    memory_data = rememberMeProtocol(query)
     query = query.lower()
     routine = parse_routine(query)
 

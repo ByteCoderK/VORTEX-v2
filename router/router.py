@@ -79,6 +79,7 @@ def route_command(query: str, queryList: list[str]):
     memory_data = rememberMeProtocol(query)
     query = query.lower()
     routine = parse_routine(query)
+    reload_routines()
 
     try:
 

@@ -1,32 +1,12 @@
 # routine_parser.py
 
 import re
-from datetime import datetime
+import json
+
+ROUTINE_FILE = "data/routines.json"
 
 def parse_routine(text: str) -> dict:
-    """
-    Parses user-defined routines from plain text.
-    Example:
-      "Every day at 7AM turn on the bedroom light"
-      "At 9pm turn off fan"
-      "Every Monday at 6 do a system check"
-    Returns:
-      {
-        "trigger": {
-            "type": "time",
-            "value": "07:00",
-            "frequency": "daily"
-        },
-        "action": {
-            "device": "bedroom light",
-            "command": "turn_on"
-        }
-      }
-    """
-
-    # VERY BASIC IMPLEMENTATION — good enough for now
-
-    # 1) TIME
+    # ======== PARSING =========
     time_match = re.search(r'(\d{1,2})(?::(\d{2}))?\s*(am|pm)?', text, re.IGNORECASE)
     if time_match:
         hour = int(time_match.group(1))
@@ -43,7 +23,6 @@ def parse_routine(text: str) -> dict:
     else:
         time_str = None
 
-    # 2) FREQUENCY
     if "every day" in text.lower():
         freq = "daily"
     elif "every monday" in text.lower():
@@ -53,7 +32,6 @@ def parse_routine(text: str) -> dict:
     else:
         freq = "once"
 
-    # 3) ACTION
     if "turn on" in text.lower():
         command = "turn_on"
         device = text.lower().split("turn on")[-1].strip()
@@ -64,7 +42,7 @@ def parse_routine(text: str) -> dict:
         command = "unknown"
         device = "unknown"
 
-    return {
+    routine_data = {
         "trigger": {
             "type": "time",
             "value": time_str,
@@ -75,3 +53,17 @@ def parse_routine(text: str) -> dict:
             "command": command
         }
     }
+
+    # ======== APPEND TO JSON =========
+    try:
+        with open(ROUTINE_FILE, "r") as f:
+            existing = json.load(f)
+    except:
+        existing = []  # if file empty/corrupt we create list but DO NOT create file here
+
+    existing.append(routine_data)
+
+    with open(ROUTINE_FILE, "w") as f:
+        json.dump(existing, f, indent=4)
+
+    return routine_data

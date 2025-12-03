@@ -2,6 +2,8 @@
 import re
 import json
 import os
+from routines.routine_engine import reload_routines
+
 
 MODULE_DIR = os.path.dirname(__file__)
 ROUTINE_FILE = os.path.join(MODULE_DIR, "data", "routines.json")
@@ -91,4 +93,5 @@ def parse_routine(text: str) -> dict:
     with open(ROUTINE_FILE, "w") as f:
         json.dump(existing, f, indent=4)
 
+    reload_routines()
     return routine_data

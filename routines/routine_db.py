@@ -30,31 +30,19 @@ def init_db():
         conn.commit()
         conn.close()
 
-def add_routine(routine: dict) -> int:
-    """
-    Accepts the routine dict returned by routine_parser.parse_routine(...)
-    Saves into sqlite and returns the new row id (index).
-    """
-    init_db()
-    with lock:
-        conn = sqlite3.connect(DB_PATH)
-        cur = conn.cursor()
-        trigger = routine.get("trigger", {})
-        action = routine.get("action", {})
-        t = trigger.get("value")
-        freq = trigger.get("frequency") or "once"
-        device = action.get("device") or ""
-        relay = action.get("relay") if action.get("relay") is not None else -1
-        state = action.get("state") or ""
-        raw = json.dumps(routine)
-        cur.execute(
-            "INSERT INTO routines (time, frequency, device, relay, state, raw_json) VALUES (?, ?, ?, ?, ?, ?)",
-            (t, freq, device, relay, state, raw)
-        )
-        rowid = cur.lastrowid
-        conn.commit()
-        conn.close()
-        return rowid
+def add_routine(time, frequency, device, relay, state):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO routines (time, frequency, device, relay, state) VALUES (?, ?, ?, ?, ?)",
+        (time, frequency, device, relay, state)
+    )
+    rid = cursor.lastrowid
+
+    conn.commit()
+    conn.close()
+    return rid
 
 def load_routines() -> list:
     """

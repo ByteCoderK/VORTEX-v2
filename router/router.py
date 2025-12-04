@@ -24,6 +24,9 @@ logging.debug(f"Project root set to: {project_root}")
 
 # routine imports
 try:
+
+
+    from routines.routine_engine import start_engine
     from routines.routine_engine import *
     from routines.routine_parser import *
     from routines.routine_db import *

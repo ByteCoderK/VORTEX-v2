@@ -1,12 +1,12 @@
 # routines/routine_engine.py
 import os
 import sys
-import threading
+import schedule
 import time
 import logging
-from datetime import datetime, timedelta, timezone
-import sqlite3
-import schedule
+import threading
+from datetime import datetime, time as dt_time
+from zoneinfo import ZoneInfo
 
 MODULE_DIR = os.path.dirname(__file__)
 sys.path.append(MODULE_DIR)
@@ -15,37 +15,77 @@ from routines.routine_db import load_routines
 from routines.routine_executor import execute_action
 
 logger = logging.getLogger("routine_engine")
-logging.basicConfig(level=logging.INFO)
-
 schedule_lock = threading.Lock()
 
-# IST timezone
-IST = timezone(timedelta(hours=5, minutes=30))
+# Server timezone is UTC on many hosts — we store times as IST (Asia/Kolkata).
+LOCAL_TZ = ZoneInfo("Asia/Kolkata")
+UTC_TZ = ZoneInfo("UTC")
 
-DB_PATH = "routines.db"  # path to your database file
+WEEKDAY_MAP = {
+    "monday": "monday",
+    "tuesday": "tuesday",
+    "wednesday": "wednesday",
+    "thursday": "thursday",
+    "friday": "friday",
+    "saturday": "saturday",
+    "sunday": "sunday",
+    "daily": "daily",
+    "once": "once"
+}
 
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS routines (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            time TEXT NOT NULL,
-            frequency TEXT NOT NULL,
-            device TEXT NOT NULL,
-            relay INTEGER NOT NULL,
-            state TEXT NOT NULL
-        )
-    """)
-    conn.commit()
-    conn.close()
+def _ist_time_to_utc_hhmm(ist_hhmm: str):
+    """
+    Convert an HH:MM time string in IST -> HH:MM string in UTC.
+    schedule library schedules based on server localtime (which is usually UTC in cloud).
+    """
+    if not ist_hhmm:
+        return None
+    try:
+        hh, mm = ist_hhmm.split(":")
+        hh = int(hh); mm = int(mm)
+        now = datetime.now(UTC_TZ)
+        # create a datetime today at IST time, then convert to UTC
+        dt_ist = datetime(now.year, now.month, now.day, hh, mm, tzinfo=LOCAL_TZ)
+        dt_utc = dt_ist.astimezone(UTC_TZ)
+        return f"{dt_utc.hour:02d}:{dt_utc.minute:02d}"
+    except Exception as e:
+        logger.exception("Time conversion failed: %s", e)
+        return ist_hhmm  # fallback
 
-# Initialize database
-init_db()
+def wrap_execute(action):
+    logger.info("Executing routine action now: %s", action)
+    try:
+        execute_action(action)
+    except Exception as e:
+        logger.exception("Error executing action: %s", e)
+
+def register_routine(routine):
+    t = routine.get("trigger", {})
+    action = routine.get("action", {})
+    value = t.get("value")
+    if not value:
+        logger.warning("Skipping routine with no time value: %s", routine)
+        return
+
+    freq = t.get("frequency", "once")
+    logger.info("Registering routine: freq=%s time=%s action=%s", freq, value, action)
+
+    # convert IST stored time -> UTC string for scheduling on server (if server runs in UTC)
+    utc_time = _ist_time_to_utc_hhmm(value)
+
+    if freq == "daily":
+        schedule.every().day.at(utc_time).do(wrap_execute, action)
+    elif freq in WEEKDAY_MAP and freq != "once":
+        # e.g. schedule.every().wednesday.at(utc_time)
+        getattr(schedule.every(), freq).at(utc_time).do(wrap_execute, action)
+    else:
+        # "once" job: schedule at utc_time today (we will not auto-remove here)
+        schedule.every().day.at(utc_time).do(wrap_execute, action)
 
 def reload_routines():
-    """Clear existing jobs and load fresh routines from JSON."""
+    """Clear existing jobs and load fresh routines from DB."""
     with schedule_lock:
+        logger.debug("Deleting *all* jobs")
         schedule.clear()
         routines = load_routines()
         logger.info("Reloading routines: %d routines found", len(routines))
@@ -53,65 +93,21 @@ def reload_routines():
             register_routine(r)
         logger.info("[ROUTINE] Reload complete.")
 
-
-def register_routine(routine):
-    t = routine["trigger"]
-    action = routine["action"]
-    value = t.get("value")
-    freq = t.get("frequency", "once")
-
-    if not value:
-        logger.warning("Skipping routine with no time value: %s", routine)
-        return
-
-    logger.info("Registering routine: freq=%s time=%s action=%s", freq, value, action)
-
-    # Convert HH:MM string to IST datetime
-    hour, minute = map(int, value.split(":"))
-    now_ist = datetime.now(IST)
-    run_time = now_ist.replace(hour=hour, minute=minute, second=0, microsecond=0)
-
-    if freq == "once":
-        if run_time < now_ist:
-            run_time += timedelta(days=1)  # schedule for tomorrow if time passed
-        delay = (run_time - now_ist).total_seconds()
-        threading.Timer(delay, wrap_execute, args=(action,)).start()
-    else:
-        # daily or day-specific routines
-        if freq == "daily":
-            schedule.every().day.at(value).do(wrap_execute, action)
-        elif freq == "monday":
-            schedule.every().monday.at(value).do(wrap_execute, action)
-        elif freq == "tuesday":
-            schedule.every().tuesday.at(value).do(wrap_execute, action)
-        elif freq == "wednesday":
-            schedule.every().wednesday.at(value).do(wrap_execute, action)
-        elif freq == "thursday":
-            schedule.every().thursday.at(value).do(wrap_execute, action)
-        elif freq == "friday":
-            schedule.every().friday.at(value).do(wrap_execute, action)
-        elif freq == "saturday":
-            schedule.every().saturday.at(value).do(wrap_execute, action)
-        elif freq == "sunday":
-            schedule.every().sunday.at(value).do(wrap_execute, action)
-        else:
-            logger.warning("Unknown frequency '%s', scheduling daily by default", freq)
-            schedule.every().day.at(value).do(wrap_execute, action)
-
-
-def wrap_execute(action):
-    logger.info("[ROUTINE] Executing action: %s", action)
+def start_engine(poll_interval=1):
+    """
+    Start scheduler loop. This will block; spawn in a thread with daemon=True.
+    """
+    # initial load
     try:
-        execute_action(action)
-        logger.info("[ROUTINE] Action executed successfully")
-    except Exception as e:
-        logger.exception("[ROUTINE] Failed to execute action: %s", e)
+        reload_routines()
+    except Exception:
+        logger.exception("Initial reload failed")
 
-
-def start_engine():
-    logger.info("[ROUTINE] Starting engine...")
-    reload_routines()
+    logger.info("[ROUTINE] Engine started. Waiting for schedule...")
     while True:
-        with schedule_lock:
+        try:
             schedule.run_pending()
-        time.sleep(1)
+            time.sleep(poll_interval)
+        except Exception:
+            logger.exception("Scheduler loop crashed — continuing.")
+            time.sleep(poll_interval)

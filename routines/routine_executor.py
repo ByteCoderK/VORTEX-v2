@@ -10,17 +10,16 @@ from commands.XAUTOMATION import ESPController
 
 # Create the controller object
 controller = ESPController(
-    broker="yourbroker.hivemq.cloud",
+    broker="c4f73c571367445282f1ae6cd0e5e0ce.s1.eu.hivemq.cloud",
     port=8883,
-    username="xxxx",
-    password="xxxx",
-    topic_cmd="your/cmd/topic",
-    topic_feedback="your/feedback/topic"
+    username="VORTEX",
+    password="ffc-5DF0FSD9AS8-e./';..ls./'lp./';..l-iucfbYwaSDewiaubv-lliot",
+    topic_cmd="vortex/relay1",
+    topic_feedback="vortex/feedback"
 )
 
 # Now call the method correctly
 controller.RoomControl(5, 'ON')
-
 
 
 def execute_action(action):

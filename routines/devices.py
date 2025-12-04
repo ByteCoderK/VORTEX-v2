@@ -1,5 +1,7 @@
-#devices.py
-# Map of device names to relays
+
+# devices.py
+from commands.XAUTOMATION import ESPController
+
 DEVICE_MAP = {
     "light": 1,
     "wind": 2,
@@ -7,17 +9,14 @@ DEVICE_MAP = {
     "socket": 4
 }
 
-# Import your ESPController from XAutomation here
-from commands.XAUTOMATION import ESPController
-
-# Single ESP instance, initialized once
+# ---------------- ESP Controller ----------------
 esp = ESPController(
-    broker="broker.hivemq.com",
+    broker="c4f73c571367445282f1ae6cd0e5e0ce.s1.eu.hivemq.cloud",
     port=8883,
-    username="user",
-    password="pass",
-    topic_cmd="home/cmd",
-    topic_feedback="home/feedback"
+    username="VORTEX",
+    password="ffc-5DF0FSD9AS8-e./';..ls./'lp./';..l-iucfbYwaSDewiaubv-lliot",
+    topic_cmd="home/cmd",         # You can change to your actual topic
+    topic_feedback="home/feedback" # Your feedback topic
 )
 
 def control_device(device_name, state):

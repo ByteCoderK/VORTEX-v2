@@ -22,6 +22,27 @@ schedule_lock = threading.Lock()
 # IST timezone
 IST = timezone(timedelta(hours=5, minutes=30))
 
+DB_PATH = "routines.db"  # path to your database file
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS routines (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            time TEXT NOT NULL,
+            frequency TEXT NOT NULL,
+            device TEXT NOT NULL,
+            relay INTEGER NOT NULL,
+            state TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+# Initialize database
+init_db()
+
 def reload_routines():
     """Clear existing jobs and load fresh routines from JSON."""
     with schedule_lock:

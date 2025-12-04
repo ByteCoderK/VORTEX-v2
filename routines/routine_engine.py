@@ -8,10 +8,12 @@ from routines.routine_executor import execute_action
 schedule_lock = threading.Lock()
 
 def wrap_execute(action):
+    logger.info(f"[ROUTINE] Executing: {action}")
     try:
         execute_action(action)
+        logger.info("[ROUTINE] Action executed successfully")
     except Exception as e:
-        print(f"[ROUTINE ERROR] {e}")
+        logger.exception(f"[ROUTINE] Failed: {e}")
 
 def register_routine(routine):
     t = routine["trigger"]

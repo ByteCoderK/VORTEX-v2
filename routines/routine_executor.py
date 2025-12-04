@@ -7,7 +7,20 @@ project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
 
 from commands.XAUTOMATION import ESPController
-RoomControl(5, 'ON')
+
+# Create the controller object
+controller = ESPController(
+    broker="yourbroker.hivemq.cloud",
+    port=8883,
+    username="xxxx",
+    password="xxxx",
+    topic_cmd="your/cmd/topic",
+    topic_feedback="your/feedback/topic"
+)
+
+# Now call the method correctly
+controller.RoomControl(5, 'ON')
+
 
 
 def execute_action(action):
@@ -23,7 +36,7 @@ def execute_action(action):
     if action["type"] == "device":
         relay = action.get("relay")
         state = action.get("state")
-        RoomControl(relay, state)
+        controller.RoomControl(relay, state)
 
     elif action["type"] == "delay":
         time.sleep(action["seconds"])

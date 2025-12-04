@@ -1,25 +1,12 @@
-# routine_executor.py
-from commands.XAUTOMATION import ESPController
+#routine_executor.py
+import time
+from routines.devices import control_device
 
-DEVICE_MAP = {
-    "light": 1,
-    "wind": 2,
-    "ambient": 3,
-    "socket": 4
-}
-
-# ---------------- ESP Controller ----------------
-esp = ESPController(
-    broker="c4f73c571367445282f1ae6cd0e5e0ce.s1.eu.hivemq.cloud",
-    port=8883,
-    username="VORTEX",
-    password="ffc-5DF0FSD9AS8-e./';..ls./'lp./';..l-iucfbYwaSDewiaubv-lliot",
-    topic_cmd="home/cmd",         # You can change to your actual topic
-    topic_feedback="home/feedback" # Your feedback topic
-)
-
-def control_device(device_name, state):
-    relay = DEVICE_MAP.get(device_name.lower())
-    if not relay:
-        raise ValueError(f"Unknown device: {device_name}")
-    esp.RoomControl(relay, state)
+def execute_action(action):
+    action_type = action.get("type")
+    if action_type == "device":
+        control_device(action["device"], action["state"])
+    elif action_type == "delay":
+        time.sleep(action.get("seconds", 1))
+    else:
+        raise ValueError(f"Unknown action type: {action_type}")

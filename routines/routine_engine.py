@@ -5,7 +5,7 @@ import threading
 import time
 import logging
 from datetime import datetime, timedelta, timezone
-
+import sqlite3
 import schedule
 
 MODULE_DIR = os.path.dirname(__file__)

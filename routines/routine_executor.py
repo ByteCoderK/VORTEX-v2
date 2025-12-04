@@ -7,6 +7,7 @@ project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
 sys.path.append(project_root)
 
 from commands.XAUTOMATION import *
+RoomControl(5, 'ON')
 
 
 def execute_action(action):

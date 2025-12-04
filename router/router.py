@@ -163,8 +163,10 @@ def route_command(query: str, queryList: list[str]):
                 return (
                     ai_future.result(timeout=10),
                     memory_future.result(timeout=10),
-                    routine_future.result(timeout=10)
-                )
+rid = add_routine(parsed_routine),  
+reload_routines(),
+routine_future.result(timeout=10)
+)
 
             except TimeoutError:
                 return "AI timeout", "Memory timeout", "Routine timeout"

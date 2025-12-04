@@ -2,8 +2,8 @@
 import schedule
 import time
 import threading
-from routines.db import load_routines
-from routines.executor import execute_action
+from routines.routine_db import load_routines
+from routines.routine_executor import execute_action
 
 schedule_lock = threading.Lock()
 

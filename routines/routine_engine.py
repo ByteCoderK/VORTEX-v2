@@ -99,8 +99,7 @@ def start_engine(poll_interval=1):
     """
     # initial load
     try:
-        logger.exception("DEBUGGING INFO : ByPassing Routine Reloading")
-        #reload_routines()
+        reload_routines()
     except Exception:
         logger.exception("Initial reload failed")
 

@@ -154,28 +154,30 @@ def route_command(query: str, queryList: list[str]):
         # ------------------- AI + MEMORY ----------------------
 
         with ThreadPoolExecutor(max_workers=3) as executor:
+    ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
+    routine_future = executor.submit(parse_routine, query)
+    memory_future = executor.submit(write_memory, memory_data)
 
-            ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
-            routine_future = executor.submit(parse_routine, query)
-            memory_future = executor.submit(write_memory, memory_data)
+    try:
+        ai_response = ai_future.result(timeout=10)
+        memory_future.result(timeout=10)
 
+        routine_result = routine_future.result(timeout=10)
+
+        # Only add routine if parse_routine returned a valid routine
+        if routine_result and routine_result.get("trigger", {}).get("value"):
             try:
-                ai_response = ai_future.result(timeout=10)
-                memory_future.result(timeout=10)
-                try:
-                    rid = add_routine(parse_routine)
-                except Exception as e:
-                    logging.critical(f"rid error : {e}")
-
-                routine_future.result(timeout=10)
-                return ai_response
-
-            except TimeoutError:
-                return "AI timeout", "Memory timeout", "Routine timeout"
-
+                rid = add_routine(
+                    routine_result["trigger"]["value"],
+                    routine_result["trigger"]["frequency"],
+                    routine_result["action"]["device"],
+                    routine_result["action"]["relay"],
+                    routine_result["action"]["state"]
+                )
+                logging.info(f"Routine added successfully, rid={rid}")
             except Exception as e:
-                return f"AI error: {e}", f"Memory error: {e}", f"Routine error: {e}"
+                logging.critical(f"Routine add error: {e}")
+        else:
+            logging.debug("No routine detected in query.")
 
-    except Exception as e:
-        logging.critical(f"Unexpected error in route_command: {str(e)}")
-        return f"Command error: {str(e)}", None
+        return ai_response

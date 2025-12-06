@@ -164,7 +164,7 @@ def route_command(query: str, queryList: list[str]):
                 memory_future.result(timeout=10)
                 try:
                     rid = add_routine(parse_routine)
-                exception Exception as e:
+                except Exception as e:
                     logging.critical(f"rid error : {e}")
 
                 routine_future.result(timeout=10)

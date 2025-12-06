@@ -24,8 +24,6 @@ logging.debug(f"Project root set to: {project_root}")
 
 # routine imports
 try:
-
-
     from routines.routine_engine import start_engine
     from routines.routine_engine import *
     from routines.routine_parser import parse_routine
@@ -35,24 +33,19 @@ except ImportError as e:
     logging.error(f"routine import failed: {str(e)}")
     raise
 
-
 # COMMANDS
 try:
-    # FIXED: import the CLASS, not the function
     from commands.XAUTOMATION import ESPController
-
     from commands.greet import greet
     from commands.date import date
     from commands.time import current_time
     from commands.Weather import live_weather
     from commands.Music import play_music
     from commands.NeuralCore import *
-
     logging.debug("Command imports successful")
 except ImportError as e:
     logging.error(f"Command import failed: {str(e)}")
     raise
-
 
 # core imports
 try:
@@ -63,7 +56,6 @@ try:
 except ImportError as e:
     logging.error(f"Core import failed: {str(e)}")
     raise
-
 
 # INIT MQTT CONTROLLER
 esp = ESPController(
@@ -85,9 +77,7 @@ def route_command(query: str, queryList: list[str]):
     reload_routines()
 
     try:
-
         # ------------------- SIMPLE COMMANDS ----------------------
-
         if "time" in queryList:
             return current_time(), None
 
@@ -154,30 +144,38 @@ def route_command(query: str, queryList: list[str]):
         # ------------------- AI + MEMORY ----------------------
 
         with ThreadPoolExecutor(max_workers=3) as executor:
-    ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
-    routine_future = executor.submit(parse_routine, query)
-    memory_future = executor.submit(write_memory, memory_data)
+            ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
+            routine_future = executor.submit(parse_routine, query)
+            memory_future = executor.submit(write_memory, memory_data)
 
-    try:
-        ai_response = ai_future.result(timeout=10)
-        memory_future.result(timeout=10)
-
-        routine_result = routine_future.result(timeout=10)
-
-        # Only add routine if parse_routine returned a valid routine
-        if routine_result and routine_result.get("trigger", {}).get("value"):
             try:
-                rid = add_routine(
-                    routine_result["trigger"]["value"],
-                    routine_result["trigger"]["frequency"],
-                    routine_result["action"]["device"],
-                    routine_result["action"]["relay"],
-                    routine_result["action"]["state"]
-                )
-                logging.info(f"Routine added successfully, rid={rid}")
-            except Exception as e:
-                logging.critical(f"Routine add error: {e}")
-        else:
-            logging.debug("No routine detected in query.")
+                ai_response = ai_future.result(timeout=10)
+                memory_future.result(timeout=10)
 
-        return ai_response
+                routine_result = routine_future.result(timeout=10)
+
+                # Only add routine if parse_routine returned a valid routine
+                if routine_result and routine_result.get("trigger", {}).get("value"):
+                    try:
+                        rid = add_routine(
+                            routine_result["trigger"]["value"],
+                            routine_result["trigger"]["frequency"],
+                            routine_result["action"]["device"],
+                            routine_result["action"]["relay"],
+                            routine_result["action"]["state"]
+                        )
+                        logging.info(f"Routine added successfully, rid={rid}")
+                    except Exception as e:
+                        logging.critical(f"Routine add error: {e}")
+                else:
+                    logging.debug("No routine detected in query.")
+
+                return ai_response
+
+            except TimeoutError:
+                logging.error("AI or memory operation timed out")
+                return "Processing timed out", None
+
+    except Exception as e:
+        logging.error(f"route_command fatal error: {e}")
+        return "Critical error during command routing", None

@@ -28,7 +28,7 @@ try:
 
     from routines.routine_engine import start_engine
     from routines.routine_engine import *
-    from routines.routine_parser import *
+    from routines.routine_parser import parse_routine
     from routines.routine_db import *
     logging.debug("routine import successful")
 except ImportError as e:
@@ -162,7 +162,8 @@ def route_command(query: str, queryList: list[str]):
             try:
                 ai_response = ai_future.result(timeout=10)
                 memory_future.result(timeout=10)
-                rid = add_routine(parsed_routine)
+                add_routine_arg = parse_routine(query)
+                rid = add_routine(add_routine_arg)
                 reload_routines()
                 routine_future.result(timeout=10)
                 return ai_response

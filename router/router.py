@@ -162,8 +162,7 @@ def route_command(query: str, queryList: list[str]):
             try:
                 ai_response = ai_future.result(timeout=10)
                 memory_future.result(timeout=10)
-                add_routine_arg = parse_routine(query)
-                rid = add_routine(add_routine_arg)
+                rid = add_routine(parse_routine)
                 reload_routines()
                 routine_future.result(timeout=10)
                 return ai_response

@@ -160,15 +160,12 @@ def route_command(query: str, queryList: list[str]):
             memory_future = executor.submit(write_memory, memory_data)
 
             try:
-    ai_response = ai_future.result(timeout=10)
-    memory_future.result(timeout=10)
-
-    rid = add_routine(parsed_routine)
-    reload_routines()
-
-    routine_future.result(timeout=10)
-
-    return ai_response
+                ai_response = ai_future.result(timeout=10)
+                memory_future.result(timeout=10)
+                rid = add_routine(parsed_routine)
+                reload_routines()
+                routine_future.result(timeout=10)
+                return ai_response
 
             except TimeoutError:
                 return "AI timeout", "Memory timeout", "Routine timeout"

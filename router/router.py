@@ -162,8 +162,11 @@ def route_command(query: str, queryList: list[str]):
             try:
                 ai_response = ai_future.result(timeout=10)
                 memory_future.result(timeout=10)
-                rid = add_routine(parse_routine)
-                reload_routines()
+                try:
+                    rid = add_routine(parse_routine)
+                exception Exception as e:
+                    logging.critical(f"rid error : {e}")
+
                 routine_future.result(timeout=10)
                 return ai_response
 

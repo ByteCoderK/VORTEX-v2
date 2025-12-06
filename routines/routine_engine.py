@@ -47,6 +47,7 @@ def _ist_time_to_utc_hhmm(ist_hhmm: str):
         # create a datetime today at IST time, then convert to UTC
         dt_ist = datetime(now.year, now.month, now.day, hh, mm, tzinfo=LOCAL_TZ)
         dt_utc = dt_ist.astimezone(UTC_TZ)
+        logger.debug(f"ROUTINE\ENGINE.PY ........... IST={ist_hhmm} -> UTC={dt_utc.hour:02d}:{dt_utc.minute:02d}")
         return f"{dt_utc.hour:02d}:{dt_utc.minute:02d}"
     except Exception as e:
         logger.exception("Time conversion failed: %s", e)

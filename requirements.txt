@@ -1,3 +1,4 @@
+pip==25.3
 ﻿fastapi==0.115.12
 pydantic==2.11.3
 pydantic_core==2.33.1
@@ -13,3 +14,5 @@ python-dotenv==1.0.0
 paho-mqtt==2.1.0
 pytz==2025.2
 schedule==1.2.2
+asyncio==4.0.0
+httpx==0.28.1

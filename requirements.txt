@@ -1,5 +1,5 @@
 pip==25.3
-﻿fastapi==0.124.0
+fastapi==0.124.0
 pydantic==2.11.3
 pydantic_core==2.33.1
 requests==2.32.3

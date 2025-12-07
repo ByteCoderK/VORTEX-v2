@@ -6,6 +6,7 @@ from router.router import route_command
 from commands.NeuralCore import*
 import asyncio
 import httpx
+import time 
 
 app = FastAPI()
 LOG_PATH = "vortex_debug.log"

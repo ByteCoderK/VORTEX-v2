@@ -4,9 +4,32 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from router.router import route_command
 from commands.NeuralCore import*
+import asyncio
+import httpx
 
 app = FastAPI()
 LOG_PATH = "vortex_debug.log"
+
+
+@app.get("/ping")
+def ping():
+    return {"status": "alive"}
+
+async def keep_awake():
+    url = "https://vortex-v2.onrender.com/ping"
+    async with httpx.AsyncClient() as client:
+        while True:
+            try:
+                await client.get(url)
+                print("Keep-alive ping sent.")
+            except Exception as e:
+                print(f"Keep-alive ping failed: {e}")
+            await asyncio.sleep(900)  # 15 minutes
+
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(keep_awake())
 
 # Add CORS middleware - allow all origins (you can restrict if you want)
 app.add_middleware(

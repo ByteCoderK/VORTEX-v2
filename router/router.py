@@ -163,6 +163,7 @@ def route_command(query: str, queryList: list[str]):
                             routine_result["action"]["state"]
                         )
                         logging.info(f"Routine added successfully, rid={rid}")
+                        reload_routines()
                     except Exception as e:
                         logging.critical(f"Routine add error: {e}")
                 else:

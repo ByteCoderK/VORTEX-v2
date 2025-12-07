@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from router.router import route_command
 from commands.NeuralCore import*
 
 app = FastAPI()
+LOG_PATH = "vortex_debug.log"
 
 # Add CORS middleware - allow all origins (you can restrict if you want)
 app.add_middleware(
@@ -17,6 +19,21 @@ app.add_middleware(
 
 class Query(BaseModel):
     query: str
+
+
+def log_streamer():
+    with open(LOG_PATH, "r", encoding="utf-8", errors="ignore") as f:
+        f.seek(0, 2)  # move to end
+        while True:
+            line = f.readline()
+            if not line:
+                time.sleep(0.2)
+                continue
+            yield f"data: {line}\n\n"
+
+@app.get("/stream_logs")
+def stream_logs():
+    return StreamingResponse(log_streamer(), media_type="text/event-stream")
 
 @app.post("/ask")
 def ask(payload: Query):

@@ -12,7 +12,7 @@ app = FastAPI()
 LOG_PATH = "vortex_debug.log"
 
 
-@app.get("/ping")
+@app.post("/ping")
 def ping():
     return {"status": "alive"}
 
@@ -25,7 +25,7 @@ async def keep_awake():
                 print("Keep-alive ping sent.")
             except Exception as e:
                 print(f"Keep-alive ping failed: {e}")
-            await asyncio.sleep(900)  # 15 minutes
+            await asyncio.sleep(840)  # 15 minutes
 
 
 @app.on_event("startup")

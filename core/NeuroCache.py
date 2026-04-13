@@ -42,7 +42,7 @@ def rememberMeProtocol(query, CURRENT_key=keys["KEY_1"]):
             )
 
             completion = client.chat.completions.create(
-                model='google/gemma-4-26b-a4b-it:free',
+                model='nvidia/nemotron-3-super-120b-a12b:free',
                 messages=[
                     {
                         "role": "system",

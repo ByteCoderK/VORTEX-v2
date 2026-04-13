@@ -33,7 +33,7 @@ def ask_ai(query, a=None, b=None):
                 continue
 
             completion = client.chat.completions.create(
-                model="nvidia/nemotron-3-super-120b-a12b:free",
+                model="z-ai/glm-4.5-air:free",
                 messages=[
                     {
   "role": "system",

@@ -70,7 +70,7 @@ threading.Thread(target=start_engine, daemon=True).start()
 
 def route_command(query: str, queryList: list[str]):
     logging.info(f"Processing query: '{query}' with tokens: {queryList}")
-    memory_data = rememberMeProtocol(query)
+    #memory_data = rememberMeProtocol(query)
     query = query.lower()
     
 
@@ -144,11 +144,11 @@ def route_command(query: str, queryList: list[str]):
         with ThreadPoolExecutor(max_workers=3) as executor:
             ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
             routine_future = executor.submit(parse_routine, query)
-            memory_future = executor.submit(write_memory, memory_data)
+            # memory_future = executor.submit(write_memory, memory_data)
 
             try:
                 ai_response = ai_future.result(timeout=10)
-                memory_future.result(timeout=10)
+                # memory_future.result(timeout=10)
 
                 routine_result = routine_future.result(timeout=10)
 

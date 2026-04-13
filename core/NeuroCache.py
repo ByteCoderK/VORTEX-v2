@@ -61,12 +61,12 @@ def rememberMeProtocol(query, CURRENT_key=keys["KEY_1"]):
             response_text = completion.choices[0].message.content
 
             # Attempt JSON parsing
-            try:
-                memory_json = json.loads(response_text)
-            except:
-                memory_json = {}
+            #try:
+                #memory_json = json.loads(response_text)
+            #except:
+                #memory_json = {}
 
-            return memory_json
+            #return memory_json
 
         except Exception as e:
             next_index = idx + 1

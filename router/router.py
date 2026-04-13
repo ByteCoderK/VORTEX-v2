@@ -50,7 +50,6 @@ except ImportError as e:
 try:
     from core.Voice import *
     from core.Listener import *
-    from core.NeuroCache import *
     logging.debug("Core imports successful")
 except ImportError as e:
     logging.error(f"Core import failed: {str(e)}")

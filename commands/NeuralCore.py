@@ -2,7 +2,7 @@ from openai import OpenAI
 
 # Stable, deterministic key ordering
 keys = {
-    "KEY_1": "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",
+    "KEY_1": "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",
     "KEY_2": "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",
     "KEY_3": "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",
     "KEY_4": "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"

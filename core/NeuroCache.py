@@ -42,7 +42,7 @@ def rememberMeProtocol(query, CURRENT_key=keys["KEY_1"]):
             )
 
             completion = client.chat.completions.create(
-                model='z-ai/glm-4.5-air:free',
+                model='meta-llama/llama-3.3-70b-instruct:free',
                 messages=[
                     {
                         "role": "system",

@@ -33,7 +33,7 @@ def ask_ai(query, a=None, b=None):
                 continue
 
             completion = client.chat.completions.create(
-                model="kwaipilot/kat-coder-pro:free",
+                model="google/gemma-4-26b-a4b-it:freegoogle/gemma-4-26b-a4b-it:free",
                 messages=[
                     {
   "role": "system",

@@ -6,6 +6,7 @@
 
 ## 🔥Overview
 
+
 **VORTEX** — formerly known as RAVIS — has been reimagined, reengineered, and rebuilt to push boundaries. This AI assistant isn't just smart. It's **bold**.  
 Designed with passion. Driven by precision. Controlled by your voice.
 

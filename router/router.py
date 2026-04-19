@@ -141,7 +141,7 @@ def route_command(query: str, queryList: list[str]):
         # ------------------- AI + MEMORY ----------------------
 
         with ThreadPoolExecutor(max_workers=3) as executor:
-            ai_future = executor.submit(ask_ai, query, keys["KEY_1"], True)
+            ai_future = executor.submit(ask_ai, query, True)
             routine_future = executor.submit(parse_routine, query)
             # memory_future = executor.submit(write_memory, memory_data)
 

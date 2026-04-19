@@ -43,7 +43,8 @@ def ask_ai(query=None):
     "history": []
 }
         response = requests.post(url, headers=headers, json=data)
-        return response.text
+        data = response.json()
+        return data.get("response")
     
     except Exception as e:
         print(f"Model failed:", e)

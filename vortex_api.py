@@ -1,9 +1,9 @@
+from core.NeuralCore import*
+from router.router import route_command
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from router.router import route_command
-from commands.NeuralCore import*
 import asyncio
 import httpx
 import time 

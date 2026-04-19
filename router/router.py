@@ -40,19 +40,10 @@ try:
     from commands.time import current_time
     from commands.Weather import live_weather
     from commands.Music import play_music
-    from commands.NeuralCore import *
+    from core.NeuralCore import *
     logging.debug("Command imports successful")
 except ImportError as e:
     logging.error(f"Command import failed: {str(e)}")
-    raise
-
-# core imports
-try:
-    from core.Voice import *
-    from core.Listener import *
-    logging.debug("Core imports successful")
-except ImportError as e:
-    logging.error(f"Core import failed: {str(e)}")
     raise
 
 # INIT MQTT CONTROLLER

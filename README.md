@@ -6,7 +6,6 @@
 
 ## 🔥Overview
 
-
 **VORTEX** — formerly known as RAVIS — has been reimagined, reengineered, and rebuilt to push boundaries. This AI assistant isn't just smart. It's **bold**.  
 Designed with passion. Driven by precision. Controlled by your voice.
 
@@ -32,7 +31,8 @@ Whether you want hands-free scripting, automated responses, or an always-on virt
 
 1. Clone the Repository  
    ```bash
-   git clone https://github.com/yourusername/VORTEX.git
+   git clone 
+   https://github.com/yourusername/VORTEX.git
    ```
 
 2. Install Dependencies  

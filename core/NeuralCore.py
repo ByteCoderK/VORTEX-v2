@@ -62,4 +62,4 @@ def ask_ai(query=None):
     
     except Exception as e:
         print(f"Model failed:", e)
-    return "All models failed."ō
+    return "All models failed."

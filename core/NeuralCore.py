@@ -12,7 +12,6 @@ def ask_ai(query=None):
     global url, headers
     if not query:
         query = input("You: ")
-
     try:
         data = {
     "prompt": query,
@@ -60,8 +59,8 @@ def ask_ai(query=None):
 }
         response = requests.post(url, headers=headers, json=data)
         data = response.json()
-        return json.dumps(response.json(), indent=2)
+        return data['response']
     
     except Exception as e:
         print(f"Model failed:", e)
-    return "All models failed."
+    return "Model Failed."

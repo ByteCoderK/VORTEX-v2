@@ -1,5 +1,4 @@
 import json
-
 import requests
 
 url = "https://ai.asherapream5.workers.dev/"
@@ -19,7 +18,6 @@ def load_history():
 
     if not isinstance(history, list):
         return []
-
     clean_history = []
 
     for message in history:
@@ -39,18 +37,15 @@ def load_history():
             "role": role,
             "content": content
         })
-
     return clean_history
     
 def save_history(history):
     with open('history.json','w',encoding='utf-8') as history_file:
         json.dump(history, history_file,indent=4)
 
-
 history = load_history()
 def ask_ai(query=None):
-    global history
-    global url, headers
+    global url, headers,history
     if not query:
         query = input("You: ")
     try:
@@ -99,7 +94,6 @@ def ask_ai(query=None):
 }
         output = requests.post(url, headers=headers, json=data)
         response = output.json()
-        print(output.text)
         try:
             json_data = json.dumps(response['response'], indent=4)
         except Exception as error:
@@ -121,7 +115,4 @@ def ask_ai(query=None):
         return data['Response']
     except Exception as e:
         print(f"Model failed:", e)
-    return "Model Failed."
-
-while True:
-    ask_ai()
+        return "Model Failed."

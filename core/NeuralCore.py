@@ -10,20 +10,22 @@ headers = {
 def load_history():
     try:
         with open("history.json", "r", encoding="utf-8") as history_file:
+            #reads the content of history.json and parses it as JSON, storing it in the variable history as python list of dictionaries
             history = json.load(history_file)
     except FileNotFoundError:
+        print("history.json not found. Starting with an empty history.")
         return []
     except json.JSONDecodeError:
+        print("history.json is not valid JSON.")
         return []
 
     if not isinstance(history, list):
         return []
-    clean_history = []
-
+    
+    filtered_history = []
     for message in history:
         if not isinstance(message, dict):
-            continue
-
+            continue    
         role = message.get("role")
         content = message.get("content")
 
@@ -33,27 +35,29 @@ def load_history():
         if not isinstance(content, str):
             continue
 
-        clean_history.append({
+        filtered_history.append({
             "role": role,
             "content": content
         })
-    return clean_history
-    
+    return filtered_history
+history = load_history()
+
 def save_history(history):
     with open('history.json','w',encoding='utf-8') as history_file:
+        #converts the history list to a JSON object and writes it to the file with indentation for readability
         json.dump(history, history_file,indent=4)
+        
 
-history = load_history()
 def ask_ai(query=None):
-    global url, headers,history
+    global history
     if not query:
         query = input("You: ")
     try:
         data = {
-    "prompt": query,
-    "systemPrompt": """You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, explanations, comments, or any text outside the JSON object.
+                "prompt": query,
+                "systemPrompt": """You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, explanations, comments, or any text outside the JSON object.
                     {
-                      "Short_memory": "history.json",
+                      "Short_memory": "example.json",
                       "tone": [],
                       "Response": "",
                       "Update_tone": [],
@@ -90,22 +94,28 @@ def ask_ai(query=None):
                     - Arrays must be valid JSON arrays.
                     - Never write comments inside the JSON.
                     - Never use trailing commas.""",
-    "history": history
-}
-        output = requests.post(url, headers=headers, json=data)
-        response = output.json()
+                "history": history
+            }
+        server_output = requests.post(url, headers=headers, json=data, timeout=20)
         try:
-            json_data = json.dumps(response['response'], indent=4)
-        except Exception as error:
-            print("Error parsing JSON:", error)
-            return "Error parsing JSON:", error
-        data = json.loads(json_data)
-        history = load_history()
+            output_json = server_output.json()
+            print("Raw response from server:", output_json)  # Debugging line to see the raw response
+        except json.JSONDecodeError as error:
+            print("Failed to decode JSON response:", error)
+            print("Response content:", server_output.text)  # Print the raw response content for debugging
+            return "Model Failed."
+        except Exception as e:
+            print("An error occurred while processing the response:", e)
+            return "Model Failed."
+        data = output_json.get('response')
+        if not isinstance(data, dict):
+            print("Unexpected response format: 'data' is not a dictionary.")
+            print("Response content:", output_json)  # Print the raw response content for debugging
+            return "Model Failed to provide a valid JSON response."
         history.append({
                         "role": "user",
                         "content": query
                 })
-
         history.append({
                         "role": "assistant",
                         "content": data["Response"]
@@ -113,6 +123,12 @@ def ask_ai(query=None):
         save_history(history)
         print(f"AI: {data['Response']}")
         return data['Response']
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+        return "Model Failed."
+    except json.JSONDecodeError as e:
+        print(f"Failed to decode JSON response: {e}")
+        return "Model Failed."
     except Exception as e:
         print(f"Model failed:", e)
         return "Model Failed."

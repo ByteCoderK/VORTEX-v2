@@ -1,3 +1,5 @@
+import json
+
 import requests
 
 url = "https://ai.asherapream5.workers.dev/"
@@ -58,7 +60,7 @@ def ask_ai(query=None):
 }
         response = requests.post(url, headers=headers, json=data)
         data = response.json()
-        return data
+        return json.dumps(response.json(), indent=2)
     
     except Exception as e:
         print(f"Model failed:", e)

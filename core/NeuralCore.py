@@ -116,7 +116,7 @@ def ask_ai(query=None):
                 try:
                     save_history(history)
                     history = load_history()
-                    print(f'AI : ',content)
+                    return content
                 except TypeError as t:
                     print(f'TypeError Error at 119-120 ask_ai :- ',t)
                     save_history(history=[{"role": "System","content": "NewFile"}])

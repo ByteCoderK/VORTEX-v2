@@ -1,61 +1,60 @@
-import json
+import os 
 import requests
-
+import json 
 url = "https://ai.asherapream5.workers.dev/"
 headers = {
         "Authorization": "Bearer :-@ZAs|T*L!<QQ.W7(xvj#A",
         "Content-Type": "application/json",
     }
+history = []
 
 def load_history():
+    global history
     try:
-        with open("history.json", "r", encoding="utf-8") as history_file:
-            #reads the content of history.json and parses it as JSON, storing it in the variable history as python list of dictionaries
-            history = json.load(history_file)
+        with open("history.json",'r',encoding='utf-8') as history_file:
+            dic_list = json.loads(history_file.read())
+            filtered = []
+            for dic in dic_list:
+                content = dic.get('content')
+                role = dic.get('role')
+                if role not in ['user','assistant','System']:
+                    continue
+                if not isinstance(content,str):
+                    print('Content is not a String,Skiping curent dict')
+                    continue
+                if not isinstance(dic, dict):
+                    print('Dic is not a dict,Skipping')
+                    continue
+                filtered.append({
+                    "role" : role,
+                    "content" : content
+                })
+        return filtered
     except FileNotFoundError:
-        print("history.json not found. Starting with an empty history.")
+        print("File not found,Starting Fresh")
+        with open('history.json', 'w',encoding='utf-8') as history_file:
+            json.dump([],history_file,indent=4)
+    except json.JSONDecodeError as e:
+        print(f'DecodeError : ',e)
         return []
-    except json.JSONDecodeError:
-        print("history.json is not valid JSON.")
+    except IsADirectoryError as a:
+        print(f"path points to a directory instead of a file",a)
         return []
-
-    if not isinstance(history, list):
-        return []
+    except PermissionError as p:
+        print("Access Denied",p)
     
-    filtered_history = []
-    for message in history:
-        if not isinstance(message, dict):
-            continue    
-        role = message.get("role")
-        content = message.get("content")
-
-        if role not in ["user", "assistant"]:
-            continue
-
-        if not isinstance(content, str):
-            continue
-
-        filtered_history.append({
-            "role": role,
-            "content": content
-        })
-    return filtered_history
-history = load_history()
-
 def save_history(history):
     with open('history.json','w',encoding='utf-8') as history_file:
-        #converts the history list to a JSON object and writes it to the file with indentation for readability
-        json.dump(history, history_file,indent=4)
-        
+        json.dump(history,history_file,indent=4)
 
 def ask_ai(query=None):
     global history
     if not query:
-        query = input("You: ")
+        query=input("YOU : ")
     try:
-        data = {
-                "prompt": query,
-                "systemPrompt": """You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, explanations, comments, or any text outside the JSON object.
+        data={
+            "prompt" : query,
+            "systemPrompt" : """You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
                     {
                       "Short_memory": "example.json",
                       "tone": [],
@@ -94,41 +93,43 @@ def ask_ai(query=None):
                     - Arrays must be valid JSON arrays.
                     - Never write comments inside the JSON.
                     - Never use trailing commas.""",
-                "history": history
-            }
-        server_output = requests.post(url, headers=headers, json=data, timeout=20)
+        "history" : history
+        }
+        server_data=requests.post(url,headers=headers,json=data,timeout=20) #Response Obj
         try:
-            output_json = server_output.json()
-            print("Raw response from server:", output_json)  # Debugging line to see the raw response
-        except json.JSONDecodeError as error:
-            print("Failed to decode JSON response:", error)
-            print("Response content:", server_output.text)  # Print the raw response content for debugging
-            return "Model Failed."
-        except Exception as e:
-            print("An error occurred while processing the response:", e)
-            return "Model Failed."
-        data = output_json.get('response')
-        if not isinstance(data, dict):
-            print("Unexpected response format: 'data' is not a dictionary.")
-            print("Response content:", output_json)  # Print the raw response content for debugging
-            return "Model Failed to provide a valid JSON response."
-        history.append({
+            json_data = server_data.json() #Response obj to JSON
+            response_string = json_data.get('response')
+            if not isinstance(response_string,dict):
+                print('Invalid Response Fromat,Error at line 101')
+                return 
+            content = response_string.get('Response')
+            role = response_string.get('role')
+            if isinstance(response_string,dict):
+                history.append({
                         "role": "user",
                         "content": query
                 })
-        history.append({
+                history.append({
                         "role": "assistant",
-                        "content": data["Response"]
+                        "content": content
                 })
-        save_history(history)
-        print(f"AI: {data['Response']}")
-        return data['Response']
-    except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
-        return "Model Failed."
-    except json.JSONDecodeError as e:
-        print(f"Failed to decode JSON response: {e}")
-        return "Model Failed."
+                try:
+                    save_history(history)
+                    history = load_history()
+                    print(f'AI : ',content)
+                except TypeError as t:
+                    print(f'TypeError Error at 119-120 ask_ai :- ',t)
+                    save_history(history=[{"role": "System","content": "NewFile"}])
+                except Exception as e:
+                    print(f'ExceptionError at line 119-120 :-',e)
+            else:
+                print("Unexpected response format: 'data' is not a dictionary.")
+                print("Response content:", server_data.text)  # Print the raw response content for debugging
+                return "Model Failed to provide a valid JSON response."
+        except json.JSONDecodeError as e:
+            print(f'JSONDecodeError : ',e)
+        except KeyError as e:
+            print('key does not exist')
+            print(f"KeyError : ",e)
     except Exception as e:
-        print(f"Model failed:", e)
-        return "Model Failed."
+        print(f'Exception Error At top level ask_ai :- ',e)    

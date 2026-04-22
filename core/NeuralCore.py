@@ -61,7 +61,7 @@ def ask_ai(query=None):
     try:
         data={
             "prompt" : query,
-            "systemPrompt" : f"""You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
+            "systemPrompt" : """You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
                                NOTE : current time:{time} of {date},
                     {
                       "Short_memory": "example.json",

@@ -12,6 +12,7 @@ app = FastAPI()
 LOG_PATH = "vortex_debug.log"
 
 
+@app.get("/ping")
 @app.post("/ping")
 def ping():
     return {"status": "alive"}

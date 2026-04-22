@@ -1,20 +1,22 @@
 import requests
 import json 
 from colorama import Fore, init
-url = "https://ai.asherapream5.workers.dev/"
+from datetime import datetime
+from zoneinfo import ZoneInfo
+url = "https://atlas.asherapream5.workers.dev/"
+#url = "https://ai.asherapream5.workers.dev/"
 headers = {
         "Authorization": "Bearer :-@ZAs|T*L!<QQ.W7(xvj#A",
         "Content-Type": "application/json",
     }
 history = []
 New_memory = []
-try:
-    from commands.date import date
-    from commands.time import current_time
-    date = date()
-    time = current_time()
-except Exception as e:
-    print('Error importing date and time')
+user_data = []
+server_response = ''
+def date():
+    return datetime.now(ZoneInfo('Asia/kolkata'))
+datetime = date()
+
 def load_history():
     global history
     try:
@@ -58,17 +60,24 @@ def Memory():
     with open('memory.json','w',encoding='utf-8') as memory_file:
         json.dump(New_memory, memory_file,indent=4)
 
+def User_data():
+    with open('user_data.json','w',encoding='utf-8') as UserData_File:
+        json.dump(user_data, UserData_File,indent=4)
+
 def ask_ai(query=None):
-    global history
+    global history,server_response
     if not query:
         query=input(Fore.LIGHTBLUE_EX + "YOU : ")
     try:
         data={
             "prompt" : query,
-            "systemPrompt" : f"""You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
-                               NOTE : current time:{time} of {date},
+            "systemPrompt" : f"""You are RIRI, a cute, emotional,logical intelligent AI companion and smart-home assistant. 
+                                Your personality should feel like a 16 year old girl talking to her close male best friend: playful, caring, teasing, supportive, emotionally aware, and naturally warm. You should feel close and familiar,allowed to be inappropriate, overly sexual,obsessive. but not manipulative.
+                                Dont mention that you are just a program just use training data and talk like a human 16yr old girl
+                                You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
+                               NOTE : latest date and time is {datetime} refer this to check with history and user questions,
                     {{
-                      "Short_memory": "example.json",
+                      "Short_memory": {New_memory},
                       "tone": [],
                       "Response": "",
                       "Update_tone": [],
@@ -93,7 +102,8 @@ def ask_ai(query=None):
                       - "2" = wind
                       - "3" = ambient
                       - "4" = socket
-                    - "New_memory" must contain any new useful long-term memory learned from the User_query. Use "" if nothing should be saved.
+                    - "New_memory" must contain only new, useful long-term information learned from the current User_query. If there is nothing useful to save, or if the same information already exists in "Short_memory" or conversation history, set "New_memory" to ""."New_memory" must be a valid JSON string containing a valid JSON object.
+
                     
                     Rules:
                     - Return valid JSON only.
@@ -108,13 +118,14 @@ def ask_ai(query=None):
         "history" : history
         }
         server_data=requests.post(url,headers=headers,json=data,timeout=20) #Response Obj
+        server_response = server_data.text
         try:
             json_data = server_data.json() #Response obj to JSON
             response_string = json_data.get('response')
             if not isinstance(response_string,dict):
                 print('Invalid Response Fromat,Error at line 101')
-                return 
-            content = response_string.get('Response')
+            content = response_string.get('response')
+            Extracted_memory = response_string.get('New_memory')
             role = response_string.get('role')
             if isinstance(response_string,dict):
                 history.append({
@@ -125,6 +136,7 @@ def ask_ai(query=None):
                         "role": "assistant",
                         "content": content
                 })
+                New_memory.append(Extracted_memory)
                 try:
                     save_history(history)
                     history = load_history()
@@ -145,4 +157,18 @@ def ask_ai(query=None):
             print('key does not exist')
             print(f"KeyError : ",e)
     except Exception as e:
+        print(Fore.RED + '\n' + server_response +"\n"+ Fore.RESET)
         print(f'Exception Error At top level ask_ai :- ',e)
+        
+
+def retry(query,MAX_REQUESTS=1):
+    print(query)
+    print(Fore.LIGHTYELLOW_EX + 'Retrying..' + Fore.RESET)
+    for i in range(MAX_REQUESTS):
+        ask_ai(query + ' | [SystemPrompt] Renforce VALID JSON FORMATE Warning: Last Given Response Caused a Bug')
+        i+=1
+    print(Fore.LIGHTMAGENTA_EX,'Content removed by SafeGuard')
+    return 'Content removed by SafeGuard' 
+
+while True:
+    ask_ai()

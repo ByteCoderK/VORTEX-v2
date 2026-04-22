@@ -1,4 +1,3 @@
-import os 
 import requests
 import json 
 from colorama import Fore, init

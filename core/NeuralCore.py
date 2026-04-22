@@ -7,7 +7,7 @@ headers = {
         "Content-Type": "application/json",
     }
 history = []
-
+New_memory = []
 try:
     from commands.date import date
     from commands.time import current_time
@@ -53,6 +53,10 @@ def load_history():
 def save_history(history):
     with open('history.json','w',encoding='utf-8') as history_file:
         json.dump(history,history_file,indent=4)
+        
+def Memory():
+    with open('memory.json','w',encoding='utf-8') as memory_file:
+        json.dump(New_memory, memory_file,indent=4)
 
 def ask_ai(query=None):
     global history

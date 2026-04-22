@@ -1,6 +1,7 @@
 import os 
 import requests
 import json 
+from colorama import Fore, init
 url = "https://ai.asherapream5.workers.dev/"
 headers = {
         "Authorization": "Bearer :-@ZAs|T*L!<QQ.W7(xvj#A",
@@ -50,7 +51,7 @@ def save_history(history):
 def ask_ai(query=None):
     global history
     if not query:
-        query=input("YOU : ")
+        query=input(Fore.LIGHTBLUE_EX + "YOU : ")
     try:
         data={
             "prompt" : query,
@@ -116,6 +117,7 @@ def ask_ai(query=None):
                 try:
                     save_history(history)
                     history = load_history()
+                    print(Fore.YELLOW + 'NeuralSense : ',content ,Fore.RESET)
                     return content
                 except TypeError as t:
                     print(f'TypeError Error at 119-120 ask_ai :- ',t)
@@ -132,4 +134,6 @@ def ask_ai(query=None):
             print('key does not exist')
             print(f"KeyError : ",e)
     except Exception as e:
-        print(f'Exception Error At top level ask_ai :- ',e)    
+        print(f'Exception Error At top level ask_ai :- ',e)
+
+ask_ai()

@@ -135,5 +135,3 @@ def ask_ai(query=None):
             print(f"KeyError : ",e)
     except Exception as e:
         print(f'Exception Error At top level ask_ai :- ',e)
-
-ask_ai()

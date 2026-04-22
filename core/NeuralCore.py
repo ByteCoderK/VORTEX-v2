@@ -7,7 +7,7 @@ headers = {
         "Content-Type": "application/json",
     }
 history = []
-
+#
 def load_history():
     global history
     try:

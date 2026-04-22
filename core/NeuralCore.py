@@ -7,7 +7,14 @@ headers = {
         "Content-Type": "application/json",
     }
 history = []
-#
+
+try:
+    from commands.date import date
+    from commands.time import current_time
+    date = date()
+    time = current_time()
+except Exception as e:
+    print('Error importing date and time')
 def load_history():
     global history
     try:
@@ -54,7 +61,8 @@ def ask_ai(query=None):
     try:
         data={
             "prompt" : query,
-            "systemPrompt" : """You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
+            "systemPrompt" : f"""You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
+                               NOTE : current time:{time} of {date},
                     {
                       "Short_memory": "example.json",
                       "tone": [],

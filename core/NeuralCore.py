@@ -61,21 +61,21 @@ def ask_ai(query=None):
     try:
         data={
             "prompt" : query,
-            "systemPrompt" : """You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
+            "systemPrompt" : f"""You are Atas.You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
                                NOTE : current time:{time} of {date},
-                    {
+                    {{
                       "Short_memory": "example.json",
                       "tone": [],
                       "Response": "",
                       "Update_tone": [],
-                      "Actions": {
+                      "Actions": {{
                         "1": "",
                         "2": "",
                         "3": "",
                         "4": ""
-                      },
+                      }},
                       "New_memory": ""
-                    }
+                    }}
                     
                     Field meanings:
                     - "Short_memory" Contains saved memory in json format refer for preparing response.

@@ -35,9 +35,6 @@ except ImportError as e:
 # COMMANDS
 try:
     from commands.XAUTOMATION import ESPController
-    from commands.greet import greet
-    from commands.date import date
-    from commands.time import current_time
     from commands.Weather import live_weather
     from commands.Music import play_music
     from core.NeuralCore import *
@@ -66,13 +63,8 @@ def route_command(query: str, queryList: list[str]):
 
     try:
         # ------------------- SIMPLE COMMANDS ----------------------
-        if "time" in queryList:
-            return current_time(), None
 
-        elif "date" in queryList:
-            return date(), None
-
-        elif "music" in queryList or "play" in queryList:
+        if "music" in queryList or "play" in queryList:
             return play_music(), None
 
         elif "weather" in queryList:

@@ -182,7 +182,4 @@ def retry(query,MAX_REQUESTS=1):
     for i in range(MAX_REQUESTS):
         ask_ai(query + ' | [SystemPrompt] Renforce VALID JSON FORMATE Warning: Last Given Response Caused a Bug')
     print(Fore.LIGHTMAGENTA_EX,'Content removed by SafeGuard')
-    return 'Query removed by SafeGuard' 
-
-while True:
-    ask_ai()
+    return 'Query removed by SafeGuard'

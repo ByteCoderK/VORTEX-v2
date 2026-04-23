@@ -1,7 +1,5 @@
-
-# devices.py
 from commands.XAUTOMATION import ESPController
-
+import os
 DEVICE_MAP = {
     "light": 1,
     "wind": 2,
@@ -9,14 +7,27 @@ DEVICE_MAP = {
     "socket": 4
 }
 
+def required_env(name: str) -> str:
+    value = os.getenv(name)
+    if value is None or value.strip() == "":
+        raise RuntimeError(f"Missing env var: {name}")
+    return value
+
 # ---------------- ESP Controller ----------------
+broker = required_env('broker')
+username = required_env('username')
+password = required_env('password')
+topic_cmd = required_env('topic_cmd_2')
+topic_feedback = required_env('topic_feedback_2')
+
+# INIT MQTT CONTROLLER
 esp = ESPController(
-    broker="c4f73c571367445282f1ae6cd0e5e0ce.s1.eu.hivemq.cloud",
+    broker=broker,
     port=8883,
-    username="VORTEX",
-    password="ffc-5DF0FSD9AS8-e./';..ls./'lp./';..l-iucfbYwaSDewiaubv-lliot",
-    topic_cmd="home/cmd",         # You can change to your actual topic
-    topic_feedback="home/feedback" # Your feedback topic
+    username=username,
+    password=password,
+    topic_cmd=topic_cmd,
+    topic_feedback=topic_feedback
 )
 
 def control_device(device_name, state):

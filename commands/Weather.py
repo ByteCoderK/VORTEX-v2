@@ -1,8 +1,11 @@
 import requests
+import os
+
+weather_api_ley = os.getenv('weather_api_ley')
+
 weather = ''
 def live_weather(city):
-    api_key = "25bd76ae6cf5eb2e0e71604ff5eb2bcd"
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_api_ley}&units=metric"
     response = requests.get(url)
     data = response.json()
 

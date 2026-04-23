@@ -6,7 +6,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 MODULE_DIR = os.path.dirname(__file__)
-ROUTINE_FILE = os.path.join(MODULE_DIR, "data", "routines.json")  # kept for compatibility/backups
+ROUTINE_FILE = os.path.join(MODULE_DIR, "data", "routines.json")
 DEVICE_MAP = {
     "light": 1,
     "wind": 2,
@@ -27,15 +27,8 @@ def _normalize_time_from_matches(hour:int, minute:int, meridian:str|None):
     return f"{hour:02d}:{minute:02d}"
 
 def parse_routine(text: str) -> dict:
-    """
-    Parse a natural phrase into a routine dict.
-    Example: "Turn on ambient at 8:30 pm" -> trigger.value "20:30", frequency "once"
-    Also saves device -> relay mapping into action.
-    This function also persists to routines.json (backup) for compatibility.
-    """
     lower = text.lower().strip()
 
-    # 1) TIME (support 12-hour with am/pm and 24-hour HH:MM)
     time_str = None
     m = re.search(r'\b(\d{1,2}):(\d{2})\s*(am|pm)\b', lower)          # 12-hour with minutes
     if m:
@@ -77,12 +70,11 @@ def parse_routine(text: str) -> dict:
         state = "OFF"
         device_name = lower.split("turn off")[-1].strip()
     else:
-        # fallback: try simple tokens
+        # fallback: simple tokens
         state = None
         device_name = None
         for token in ("turn", "on", "off"):
             if token in lower:
-                # best-effort, but leave None if unclear
                 pass
 
     # map device text -> relay number
@@ -105,7 +97,6 @@ def parse_routine(text: str) -> dict:
         "action": action
     }
 
-    # Append to a simple JSON backup file (not the DB) — helpful for offline debugging.
     try:
         os.makedirs(os.path.dirname(ROUTINE_FILE), exist_ok=True)
         if os.path.exists(ROUTINE_FILE):
@@ -121,6 +112,6 @@ def parse_routine(text: str) -> dict:
         with open(ROUTINE_FILE, "w") as f:
             json.dump(existing, f, indent=4)
     except Exception:
-        pass  # fail silently for backup step
+        pass
 
     return routine_data

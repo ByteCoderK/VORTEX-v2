@@ -1,36 +1,26 @@
-# routines/routine_executor.py
 import logging
 import time
 
 logger = logging.getLogger("routine_executor")
-
-# Import your ESPController class and call via instance pattern used in your router.
-# We'll attempt to import a global 'esp' if present (router.py creates it).
-# Fallback: try import commands.XAUTOMATION.ESPController and create a local instance (best-effort).
 try:
-    # most of your code expects there to be a global `esp` object created in router
-    from commands.XAUTOMATION import ESPController  # just to check available
+    from commands.XAUTOMATION import ESPController
 except Exception:
     ESPController = None
 
 def _get_esp_instance():
-    # prefer a global esp if already created by router; otherwise make a local one (requires credentials)
     try:
-        # if router created an esp in global scope, it'll be imported into same interpreter
         import builtins
         if hasattr(builtins, "esp"):
             return getattr(builtins, "esp")
     except Exception:
         pass
 
-    # fallback: try to import the module-level 'esp' if available
     try:
         from router.router import esp as esp_from_router
         return esp_from_router
     except Exception:
         pass
 
-    # last resort: don't create a new connection here automatically (credentials would be needed).
     return None
 
 def execute_action(action: dict):

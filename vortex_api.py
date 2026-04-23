@@ -7,7 +7,8 @@ from pydantic import BaseModel
 import asyncio
 import httpx
 import time 
-
+import os
+url = os.getenv('render_url')
 app = FastAPI()
 LOG_PATH = "vortex_debug.log"
 
@@ -18,7 +19,6 @@ def ping():
     return {"status": "alive"}
 
 async def keep_awake():
-    url = "https://vortex-v2.onrender.com/ping"
     async with httpx.AsyncClient() as client:
         while True:
             try:
@@ -33,10 +33,9 @@ async def keep_awake():
 async def startup_event():
     asyncio.create_task(keep_awake())
 
-# Add CORS middleware - allow all origins (you can restrict if you want)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins - you can restrict to your domain here
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -64,7 +63,6 @@ def stream_logs():
 def ask(payload: Query):
     response = route_command(payload.query, payload.query.lower())
     RawOutput=response
-    # Handle None safely and log a simple warning
     if RawOutput is None:
         q=payload.query
         print (f"route_command returned None for query={q}")
@@ -73,13 +71,10 @@ def ask(payload: Query):
 
     if isinstance(RawOutput, str):
         return {"ATLAS": RawOutput}
-
-# Otherwise try to iterate; if not iterable, convert to str
     try:
         items = list(RawOutput)
     except TypeError:
         FinalOutput = str(RawOutput)
     else:
         FinalOutput = " ".join(str(item) for item in items if item is not None)
-
     return {"ATLAS": FinalOutput}

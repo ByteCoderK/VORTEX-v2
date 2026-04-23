@@ -58,7 +58,6 @@ def load_routines() -> list:
 
     routines = []
     for r in rows:
-        # if raw_json exists and valid use it (keeps original structure)
         try:
             parsed = json.loads(r[6]) if r[6] else None
         except Exception:
@@ -86,7 +85,6 @@ def delete_routine(index: int) -> bool:
         return changed > 0
 
 def save_routines_as_json(path):
-    """Utility: dump DB to a JSON file (for debugging)."""
     r = load_routines()
     with open(path, "w") as f:
         json.dump(r, f, indent=4)

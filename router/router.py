@@ -17,11 +17,6 @@ logging.basicConfig(
     handlers=[logging.FileHandler('vortex_debug.log'),
               logging.StreamHandler()]
 )
-
-project_root = os.path.abspath("C:\\Users\\User One\\Desktop\\VORTEX-v2")
-sys.path.append(project_root)
-logging.debug(f"Project root set to: {project_root}")
-
 # routine imports
 try:
     from routines.routine_engine import start_engine, reload_routines
@@ -36,24 +31,34 @@ except ImportError as e:
 try:
     from commands.XAUTOMATION import ESPController
     from commands.Weather import live_weather
-    from commands.Music import play_music
     from core.NeuralCore import *
     logging.debug("Command imports successful")
 except ImportError as e:
     logging.error(f"Command import failed: {str(e)}")
     raise
+threading.Thread(target=start_engine, daemon=True).start()
+
+def required_env(name: str) -> str:
+    value = os.getenv(name)
+    if value is None or value.strip() == "":
+        raise RuntimeError(f"Missing env var: {name}")
+    return value
+
+broker = required_env('broker')
+username = required_env('username')
+password = required_env('password')
+topic_cmd = required_env('topic_cmd')
+topic_feedback = required_env('topic_feedback')
 
 # INIT MQTT CONTROLLER
 esp = ESPController(
-    broker="c4f73c571367445282f1ae6cd0e5e0ce.s1.eu.hivemq.cloud",
+    broker=broker,
     port=8883,
-    username="VORTEX",
-    password="ffc-5DF0FSD9AS8-e./';..ls./'lp./';..l-iucfbYwaSDewiaubv-lliot",
-    topic_cmd="vortex/relay1",
-    topic_feedback="vortex/feedback"
+    username=username,
+    password=password,
+    topic_cmd=topic_cmd,
+    topic_feedback=topic_feedback
 )
-
-threading.Thread(target=start_engine, daemon=True).start()
 
 def route_command(query: str, queryList: list[str]):
     logging.info(f"Processing query: '{query}' with tokens: {queryList}")
@@ -64,76 +69,18 @@ def route_command(query: str, queryList: list[str]):
     try:
         # ------------------- SIMPLE COMMANDS ----------------------
 
-        if "music" in queryList or "play" in queryList:
-            return play_music(), None
-
-        elif "weather" in queryList:
+        if "weather" in queryList:
             city = input("Specify the city: ")
             return live_weather(city), None
-
-        # ------------------- ROOM CONTROLS ----------------------
-
-        # TURN ON
-        if "turno" in queryList or "onm" in queryList:
-
-            if "light" in queryList:
-                esp.RoomControl(1, "ON")
-                return "Light is now on", None
-
-            if "wind" in queryList:
-                esp.RoomControl(2, "ON")
-                return "Wind is now on", None
-
-            if "ambient" in queryList:
-                esp.RoomControl(3, "ON")
-                return "Ambient Light is now on", None
-
-            if "socket" in queryList:
-                esp.RoomControl(4, "ON")
-                return "Socket is now on", None
-
-            if "all" in queryList:
-                for i in range(1, 5):
-                    esp.RoomControl(i, "ON")
-                return "All Devices are now on", None
-
-        # TURN OFF
-        if "turno" in queryList or "offm" in queryList:
-
-            if "light" in queryList:
-                esp.RoomControl(1, "OFF")
-                return "Light is now off", None
-
-            if "wind" in queryList:
-                esp.RoomControl(2, "OFF")
-                return "Wind is now off", None
-
-            if "ambient" in queryList:
-                esp.RoomControl(3, "OFF")
-                return "Ambient Light is now off", None
-
-            if "socket" in queryList:
-                esp.RoomControl(4, "OFF")
-                return "Socket is now off", None
-
-            if "all" in queryList:
-                for i in range(1, 5):
-                    esp.RoomControl(i, "OFF")
-                return "All Devices are now off", None
-
-        # ------------------- AI + MEMORY ----------------------
-
+        #-----------------------------------------------------------
         with ThreadPoolExecutor(max_workers=3) as executor:
             ai_future = executor.submit(ask_ai, query)
             routine_future = executor.submit(parse_routine, query)
             # memory_future = executor.submit(write_memory, memory_data)
-
             try:
                 ai_response = ai_future.result(timeout=10)
                 # memory_future.result(timeout=10)
-
                 routine_result = routine_future.result(timeout=10)
-
                 # Only add routine if parse_routine returned a valid routine
                 if routine_result and routine_result.get("trigger", {}).get("value"):
                     try:
@@ -150,13 +97,10 @@ def route_command(query: str, queryList: list[str]):
                         logging.critical(f"Routine add error: {e}")
                 else:
                     logging.debug("No routine detected in query.")
-
                 return ai_response
-
             except TimeoutError:
                 logging.error("AI or memory operation timed out")
                 return "Processing timed out", None
-
     except Exception as e:
         logging.error(f"route_command fatal error: {e}")
         return "Critical error during command routing", None

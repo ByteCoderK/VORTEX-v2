@@ -1,4 +1,3 @@
-# routines/routine_engine.py
 import os
 import sys
 import schedule
@@ -18,7 +17,6 @@ from routines.routine_executor import execute_action
 logger = logging.getLogger("routine_engine")
 schedule_lock = threading.Lock()
 
-# Server timezone is UTC on many hosts — we store times as IST (Asia/Kolkata).
 LOCAL_TZ = ZoneInfo("Asia/Kolkata")
 UTC_TZ = ZoneInfo("UTC")
 
@@ -63,7 +61,6 @@ def _ist_time_to_utc_hhmm(ist_hhmm: str) -> str | None:
             logger.warning("IST time out of range: %s", ist_hhmm)
             return None
 
-        # use today's date to produce a converted HH:MM in UTC
         now_utc = datetime.now(UTC_TZ)
         dt_ist = datetime(now_utc.year, now_utc.month, now_utc.day, hh, mm, tzinfo=LOCAL_TZ)
         dt_utc = dt_ist.astimezone(UTC_TZ)
@@ -72,7 +69,7 @@ def _ist_time_to_utc_hhmm(ist_hhmm: str) -> str | None:
         return utc_str
     except Exception as e:
         logger.exception("Time conversion failed for %s: %s", ist_hhmm, e)
-        return None  # explicit None on failure
+        return None
 
 
 def wrap_execute(action):
@@ -103,7 +100,6 @@ def register_routine(routine):
         freq = (t.get("frequency") or "once").lower()
         logger.info("Registering routine: freq=%s time=%s action=%s", freq, value, action)
 
-        # convert IST stored time -> UTC string for scheduling on server (if server runs in UTC)
         utc_time = _ist_time_to_utc_hhmm(value)
         if not utc_time:
             logger.warning("Skipping routine due to invalid time conversion: %s", value)
@@ -113,15 +109,12 @@ def register_routine(routine):
             logger.warning("Skipping routine; invalid HH:MM after conversion: %s", utc_time)
             return
 
-        # Schedule safely with exception handling
         try:
             if freq == "daily":
                 schedule.every().day.at(utc_time).do(wrap_execute, action)
             elif freq in WEEKDAY_MAP and freq != "once":
-                # e.g. schedule.every().wednesday.at(utc_time)
                 getattr(schedule.every(), freq).at(utc_time).do(wrap_execute, action)
             else:
-                # "once" job: schedule at utc_time today (it will run the next day if already passed)
                 schedule.every().day.at(utc_time).do(wrap_execute, action)
         except Exception as e:
             logger.exception("Failed to schedule routine (freq=%s time=%s): %s", freq, utc_time, e)
@@ -133,7 +126,6 @@ def register_routine(routine):
 
 
 def reload_routines():
-    """Clear existing jobs and load fresh routines from DB."""
     with schedule_lock:
         try:
             logger.debug("Deleting *all* jobs")
@@ -148,10 +140,6 @@ def reload_routines():
 
 
 def start_engine(poll_interval=1):
-    """
-    Start scheduler loop. This will block; spawn in a thread with daemon=True.
-    """
-    # initial load
     try:
         reload_routines()
     except Exception:

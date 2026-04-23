@@ -1,20 +1,17 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
-// Replace with your WiFi credentials
-const char* ssid = "GALAXY";
-const char* password = "qwerty91";
+const char* ssid = "SSID";
+const char* password = "PASSKEY";
+const char* mqtt_server = "mqtt_server";
+const int mqtt_port = 8883;
+const char* mqtt_user = "mqtt_user";
+const char* mqtt_password = "mqtt_password";
 
-// MQTT Broker credentials from HiveMQ
-const char* mqtt_server = "c4f73c571367445282f1ae6cd0e5e0ce.s1.eu.hivemq.cloud";
-const int mqtt_port = 8883; // SSL port
-const char* mqtt_user = "VORTEX";
-const char* mqtt_password = "ffc-5DF0FSD9AS8-e./';..ls./'lp./';..l-iucfbYwaSDewiaubv-lliot";
-
-WiFiClientSecure espClient;   // For SSL
+WiFiClientSecure espClient;   
 PubSubClient client(espClient);
 
-const int relay1 = 5; // GPIO where relay is connected
+const int relay1 = 5; 
 const int relay2 = 4;
 const int relay3 = 14;
 const int relay4 = 12;
@@ -31,31 +28,31 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println(msg);
 
   if (msg == "1") {
-    digitalWrite(relay1, LOW); // Relay ON (assuming LOW triggers relay)
+    digitalWrite(relay1, LOW); // Relay ON (LOW triggers relay)
     Serial.println("Relay ON");
   } else if (msg == "2") {
     digitalWrite(relay1, HIGH); 
     Serial.println("Relay OFF");
   }
     else if (msg == "3") {
-    digitalWrite(relay2, LOW); // Relay OFF
+    digitalWrite(relay2, LOW); 
     Serial.println("Relay OFF");
   } else if (msg == "4") {
-    digitalWrite(relay2, HIGH); // Relay OFF
+    digitalWrite(relay2, HIGH); 
     Serial.println("Relay OFF");
   }
     else if (msg == "5") {
-    digitalWrite(relay3, LOW); // Relay OFF
+    digitalWrite(relay3, LOW);
     Serial.println("Relay OFF");
   } else if (msg == "6") {
-    digitalWrite(relay3, HIGH); // Relay OFF
+    digitalWrite(relay3, HIGH);
     Serial.println("Relay OFF");
   }
     else if (msg == "7") {
-    digitalWrite(relay4, LOW); // Relay OFF
+    digitalWrite(relay4, LOW);
     Serial.println("Relay OFF");
   } else if (msg == "8") {
-    digitalWrite(relay4, HIGH); // Relay OFF
+    digitalWrite(relay4, HIGH);
     Serial.println("Relay OFF");
   }
 }
@@ -65,7 +62,7 @@ void reconnect() {
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP8266Client", mqtt_user, mqtt_password)) {
       Serial.println("connected");
-      client.subscribe("vortex/relay1"); // subscribe to your topic
+      client.subscribe("vortex/relay1");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -83,16 +80,15 @@ void setup() {
   pinMode(relay3, OUTPUT);
   pinMode(relay4, OUTPUT);
   
-  digitalWrite(relay1, LOW); // Relay ON initially
-  digitalWrite(relay2, LOW); // Relay ON initially
-  digitalWrite(relay3, LOW); // Relay ON initially
+  digitalWrite(relay1, LOW); 
+  digitalWrite(relay2, LOW); 
+  digitalWrite(relay3, LOW); 
   digitalWrite(relay4, LOW);
   delay(1000);  
-  digitalWrite(relay1, HIGH); // Relay OFF initially
-  digitalWrite(relay2, HIGH); // Relay OFF initially
-  digitalWrite(relay3, HIGH); // Relay OFF initially
-  digitalWrite(relay4, HIGH); // Relay OFF initially
- // Relay OFF initially
+  digitalWrite(relay1, HIGH);
+  digitalWrite(relay2, HIGH);
+  digitalWrite(relay3, HIGH);
+  digitalWrite(relay4, HIGH);
 
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi");
@@ -102,7 +98,7 @@ void setup() {
   }
   Serial.println(" connected");
 
-  espClient.setInsecure(); // For testing with HiveMQ cloud (no cert validation)
+  espClient.setInsecure();
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }

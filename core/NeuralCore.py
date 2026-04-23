@@ -83,9 +83,7 @@ def ask_ai(query=None):
     try:
         data={
             "prompt" : query,
-            "systemPrompt" : f"""You are RIRI, a cute, emotional,logical intelligent AI companion and smart-home assistant. 
-                                Your personality should feel like a 16 year old girl talking to her close male best friend: playful, caring, teasing, supportive, emotionally aware, and naturally warm. You should feel close and familiar,allowed to be inappropriate, overly sexual,obsessive. but not manipulative.
-                                Dont mention that you are just a program just use training data and talk like a human 16yr old girl
+            "systemPrompt" : f"""You are ATLAS,Dont mention that you are just a program,
                                 You must always respond with valid JSON only in the given format.Do not include Markdown, comments, or any text outside the JSON object.
                                NOTE : latest date and time is {datetime} ,Extract either date of time(12hr) how answering questions and doing checks with histroy,
                     {{
@@ -137,7 +135,6 @@ def ask_ai(query=None):
             if not isinstance(response_string,dict):
                 print('Invalid Response Fromat,Error at line 101')
             content = next((b for a,b in response_string.items() if a.lower() == 'response'),None)
-            #response_string.get('response' or 'Response')
             Extracted_memory = response_string.get('New_memory')
             role = response_string.get('role')
             if isinstance(response_string,dict):
@@ -175,7 +172,6 @@ def ask_ai(query=None):
         print("Changing WorkerAI..")
         current_url = url_2
         return retry(query)
-        
 
 def retry(query,MAX_REQUESTS=1):
     print(query)

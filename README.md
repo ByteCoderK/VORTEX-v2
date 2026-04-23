@@ -76,5 +76,5 @@ Whether you want hands-free scripting, automated responses, or an always-on virt
 
 This project is proprietary. Redistribution, modification, or commercial use is **not permitted** without explicit permission from the author.
 
-For commercial inquiries or special licensing, please contact: [genovance.help@gmail.com]
+For commercial inquiries or special licensing, please contact: [alvyu.official@gmail.com]
 

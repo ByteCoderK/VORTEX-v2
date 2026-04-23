@@ -24,7 +24,7 @@ New_memory = []
 user_data = []
 server_response = ''
 def date():
-    return datetime.now(ZoneInfo('Asia/kolkata'))
+    return datetime.now(ZoneInfo('Asia/Kolkata'))
 datetime = date()
 
 def load_history():

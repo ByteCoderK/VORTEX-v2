@@ -23,6 +23,7 @@ history = []
 New_memory = []
 user_data = []
 server_response = ''
+
 def date():
     return datetime.now(ZoneInfo('Asia/Kolkata'))
 datetime = date()
@@ -173,7 +174,7 @@ def ask_ai(query=None):
         print(f'Exception Error At top level ask_ai :- ',e)
         print("Changing WorkerAI..")
         current_url = url_2
-        retry(query)
+        return retry(query)
         
 
 def retry(query,MAX_REQUESTS=1):
@@ -181,5 +182,5 @@ def retry(query,MAX_REQUESTS=1):
     print(Fore.LIGHTYELLOW_EX + 'Retrying..' + Fore.RESET)
     for i in range(MAX_REQUESTS):
         ask_ai(query + ' | [SystemPrompt] Renforce VALID JSON FORMATE Warning: Last Given Response Caused a Bug')
-    print(Fore.LIGHTMAGENTA_EX,'Content removed by SafeGuard')
+    print(Fore.LIGHTMAGENTA_EX,'Query removed by SafeGuard')
     return 'Query removed by SafeGuard'

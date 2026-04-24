@@ -1,5 +1,8 @@
 import requests
 import os
+import logging
+
+logger = logging.getLogger("vortex.cli")
 
 def required_env(name: str) -> str:
     value = os.getenv(name)
@@ -9,16 +12,20 @@ def required_env(name: str) -> str:
 render_ask = required_env('render_ask')
 
 def logic():
+    logger.info("VORTEX CLI started")
     while True:
         query = input("You: ")
+        logger.info("CLI query submitted: %s", query)
         res = requests.post(render_ask, json={"query": query})
         data = res.json()
 
         if "response" in data:
             response_str = str(data["response"])
+            logger.info("CLI received response")
             print("VORTEX:", response_str)
             return {"response": response_str}
         else:
+            logger.warning("CLI received error payload: %s", data)
             print("VORTEX: Error", data.get("details", "Unknown error"))
 if __name__ == '__main__':
     logic()

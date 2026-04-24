@@ -2,6 +2,7 @@
 import os
 import sqlite3
 import json
+import logging
 from threading import Lock
 
 MODULE_DIR = os.path.dirname(__file__)
@@ -10,9 +11,11 @@ os.makedirs(DATA_DIR, exist_ok=True)
 DB_PATH = os.path.join(DATA_DIR, "routines.db")
 
 lock = Lock()
+logger = logging.getLogger("vortex.routines.db")
 
 def init_db():
     """Ensure DB and table exist."""
+    logger.debug("Initializing routines database at %s", DB_PATH)
     with lock:
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
@@ -31,6 +34,7 @@ def init_db():
         conn.close()
 
 def add_routine(time, frequency, device, relay, state):
+    logger.info("Adding routine time=%s frequency=%s device=%s relay=%s state=%s", time, frequency, device, relay, state)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -42,6 +46,7 @@ def add_routine(time, frequency, device, relay, state):
 
     conn.commit()
     conn.close()
+    logger.info("Routine inserted with id=%s", rid)
     return rid
 
 def load_routines() -> list:
@@ -49,6 +54,7 @@ def load_routines() -> list:
     Returns a list of routines (same format as parse_routine -> dict)
     """
     init_db()
+    logger.debug("Loading routines from database")
     with lock:
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
@@ -71,9 +77,11 @@ def load_routines() -> list:
                 "trigger": {"type": "time", "value": r[1], "frequency": r[2]},
                 "action": {"type": "device", "device": r[3], "relay": r[4], "state": r[5]}
             })
+    logger.info("Loaded %d routines", len(routines))
     return routines
 
 def delete_routine(index: int) -> bool:
+    logger.info("Deleting routine id=%s", index)
     init_db()
     with lock:
         conn = sqlite3.connect(DB_PATH)
@@ -82,9 +90,11 @@ def delete_routine(index: int) -> bool:
         changed = cur.rowcount
         conn.commit()
         conn.close()
+        logger.info("Delete routine success=%s", changed > 0)
         return changed > 0
 
 def save_routines_as_json(path):
+    logger.info("Saving routines JSON snapshot to %s", path)
     r = load_routines()
     with open(path, "w") as f:
         json.dump(r, f, indent=4)

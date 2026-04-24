@@ -2,6 +2,7 @@
 import re
 import json
 import os
+import logging
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -15,6 +16,7 @@ DEVICE_MAP = {
     "socket": 4,
     "plug": 4
 }
+logger = logging.getLogger("vortex.routines.parser")
 
 def _normalize_time_from_matches(hour:int, minute:int, meridian:str|None):
     """Convert hour/minute + am/pm into 24h HH:MM string (IST stored)."""
@@ -27,6 +29,7 @@ def _normalize_time_from_matches(hour:int, minute:int, meridian:str|None):
     return f"{hour:02d}:{minute:02d}"
 
 def parse_routine(text: str) -> dict:
+    logger.info("Parsing routine text: %s", text)
     lower = text.lower().strip()
 
     time_str = None
@@ -96,6 +99,7 @@ def parse_routine(text: str) -> dict:
         "trigger": {"type": "time", "value": time_str, "frequency": freq},
         "action": action
     }
+    logger.debug("Parsed routine data: %s", routine_data)
 
     try:
         os.makedirs(os.path.dirname(ROUTINE_FILE), exist_ok=True)
@@ -105,6 +109,7 @@ def parse_routine(text: str) -> dict:
         else:
             existing = []
     except Exception:
+        logger.exception("Failed loading existing routines JSON")
         existing = []
 
     existing.append(routine_data)
@@ -112,6 +117,8 @@ def parse_routine(text: str) -> dict:
         with open(ROUTINE_FILE, "w") as f:
             json.dump(existing, f, indent=4)
     except Exception:
+        logger.exception("Failed writing routines JSON")
         pass
 
+    logger.info("Routine parsing complete")
     return routine_data

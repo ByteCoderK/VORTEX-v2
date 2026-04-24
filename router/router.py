@@ -5,26 +5,29 @@ import random
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 import threading 
 
+logger = logging.getLogger("vortex.router")
+
 standby_word = ["standby", "preparing", "engaging", "processing", "charging",
                 "optimizing", "booting up", "syncing", "initializing",
                 "configuring", "diagnosing", "executing", "operating",
                 "synchronizing"]
 standby_msg = "Alright Master, " + random.choice(standby_word) + "..."
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('vortex_debug.log'),
-              logging.StreamHandler()]
-)
+if not logger.handlers:
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[logging.FileHandler('vortex_debug.log'),
+                  logging.StreamHandler()]
+    )
 # routine imports
 try:
     from routines.routine_engine import start_engine, reload_routines
     from routines.routine_parser import parse_routine
     from routines.routine_db import *
-    logging.debug("routine import successful")
+    logger.debug("routine import successful")
 except ImportError as e:
-    logging.error(f"routine import failed: {str(e)}")
+    logger.error("routine import failed: %s", str(e))
     raise
 
 # COMMANDS
@@ -32,9 +35,9 @@ try:
     from commands.XAUTOMATION import ESPController
     from commands.Weather import live_weather
     from core.NeuralCore import *
-    logging.debug("Command imports successful")
+    logger.debug("Command imports successful")
 except ImportError as e:
-    logging.error(f"Command import failed: {str(e)}")
+    logger.error("Command import failed: %s", str(e))
     raise
 threading.Thread(target=start_engine, daemon=True).start()
 
@@ -61,7 +64,7 @@ esp = ESPController(
 )
 
 def route_command(query: str, queryList: list[str]):
-    logging.info(f"Processing query: '{query}' with tokens: {queryList}")
+    logger.info("Processing query: '%s' with tokens: %s", query, queryList)
     #memory_data = rememberMeProtocol(query)
     query = query.lower()
     
@@ -70,10 +73,12 @@ def route_command(query: str, queryList: list[str]):
         # ------------------- SIMPLE COMMANDS ----------------------
 
         if "weather" in queryList:
+            logger.info("Weather branch selected")
             city = input("Specify the city: ")
             return live_weather(city), None
         #-----------------------------------------------------------
         with ThreadPoolExecutor(max_workers=3) as executor:
+            logger.debug("Submitting AI and routine parsing tasks")
             ai_future = executor.submit(ask_ai, query)
             routine_future = executor.submit(parse_routine, query)
             # memory_future = executor.submit(write_memory, memory_data)
@@ -81,6 +86,7 @@ def route_command(query: str, queryList: list[str]):
                 ai_response = ai_future.result(timeout=10)
                 # memory_future.result(timeout=10)
                 routine_result = routine_future.result(timeout=10)
+                logger.debug("AI and routine parsing completed")
                 # Only add routine if parse_routine returned a valid routine
                 if routine_result and routine_result.get("trigger", {}).get("value"):
                     try:
@@ -91,16 +97,17 @@ def route_command(query: str, queryList: list[str]):
                             routine_result["action"]["relay"],
                             routine_result["action"]["state"]
                         )
-                        logging.info(f"Routine added successfully, rid={rid}")
+                        logger.info("Routine added successfully, rid=%s", rid)
                         reload_routines()
                     except Exception as e:
-                        logging.critical(f"Routine add error: {e}")
+                        logger.exception("Routine add error: %s", e)
                 else:
-                    logging.debug("No routine detected in query.")
+                    logger.debug("No routine detected in query.")
+                logger.info("route_command completed successfully")
                 return ai_response
             except TimeoutError:
-                logging.error("AI or memory operation timed out")
+                logger.error("AI or memory operation timed out")
                 return "Processing timed out", None
     except Exception as e:
-        logging.error(f"route_command fatal error: {e}")
+        logger.exception("route_command fatal error: %s", e)
         return "Critical error during command routing", None

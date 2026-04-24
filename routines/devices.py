@@ -1,5 +1,7 @@
 from commands.XAUTOMATION import ESPController
 import os
+import logging
+logger = logging.getLogger("vortex.routines.devices")
 DEVICE_MAP = {
     "light": 1,
     "wind": 2,
@@ -29,9 +31,13 @@ esp = ESPController(
     topic_cmd=topic_cmd,
     topic_feedback=topic_feedback
 )
+logger.info("Routine device ESP controller initialized")
 
 def control_device(device_name, state):
+    logger.info("control_device called device=%s state=%s", device_name, state)
     relay = DEVICE_MAP.get(device_name.lower())
     if not relay:
+        logger.error("Unknown device requested: %s", device_name)
         raise ValueError(f"Unknown device: {device_name}")
     esp.RoomControl(relay, state)
+    logger.info("RoomControl dispatched relay=%s state=%s", relay, state)

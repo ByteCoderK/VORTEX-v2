@@ -13,7 +13,6 @@ import logging
 from pathlib import Path
 
 url = os.getenv("render_url")
-frontend_origins = os.getenv("FRONTEND_ORIGINS", "")
 
 app = FastAPI()
 LOG_PATH = Path("vortex_debug.log")
@@ -35,16 +34,6 @@ if not logger.handlers:
 
     logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
-
-allowed_origins = [
-    origin.strip()
-    for origin in frontend_origins.split(",")
-    if origin.strip()
-]
-
-if not allowed_origins:
-    allowed_origins = ["*"]
-
 
 @app.get("/ping")
 @app.post("/ping")
@@ -74,7 +63,7 @@ async def startup_event():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -77,7 +77,11 @@ async def log_streamer():
     LOG_PATH.touch(exist_ok=True)
 
     with LOG_PATH.open("r", encoding="utf-8", errors="ignore") as f:
-        f.seek(0, 2)  # move to end
+        # First send the existing log history, then continue tailing live.
+        f.seek(0)
+        for line in f:
+            yield f"data: {line.rstrip()}\n\n"
+
         while True:
             line = f.readline()
             if not line:
